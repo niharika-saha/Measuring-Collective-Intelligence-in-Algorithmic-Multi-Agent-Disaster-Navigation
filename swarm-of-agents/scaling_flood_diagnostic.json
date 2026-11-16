@@ -1,0 +1,1868 @@
+{
+  "experiment": "fixed_workload_multi_agent_scaling",
+  "schema_version": "1.1",
+  "disaster_type": "flood",
+  "fixed_task_count": 10,
+  "agent_counts": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "runs": 1,
+  "seeds": [
+    42
+  ],
+  "simulation_step_budget": 50,
+  "serial_baseline_max_step_budget": 50,
+  "serial_baseline_budget_policy": "Replay the same seed and fixed task manifest with geometrically increasing step budgets until all ten tasks complete or the serial maximum budget is reached. Parallel arms use the initial budget.",
+  "serial_step_growth_factor": 2.0,
+  "task_assignment": "Deterministic round-robin partition of the same ten-task manifest; each agent executes its queue serially.",
+  "repositioning_cost_included": true,
+  "communication_configuration": {
+    "shared_memory": true,
+    "local_messaging": true,
+    "pheromones": true,
+    "radius_m": 500.0,
+    "delay_steps": 0,
+    "board_delay_steps": 0,
+    "sync_on_contact": true
+  },
+  "summary_by_agent_count": {
+    "1": {
+      "num_agents": 1,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 50.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 2520.098,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 29.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 29.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 11.5075,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 580.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 37.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 37.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 29.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    },
+    "2": {
+      "num_agents": 2,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 50.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 3223.249,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 0.64,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 30.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 30.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 9.3074,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 300.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 75.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 75.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 2.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 2.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 31.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    },
+    "3": {
+      "num_agents": 3,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 50.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 4082.432,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 0.5067,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 31.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 31.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 7.5935,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 206.6667,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 115.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 115.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 3.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 3.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 35.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    },
+    "5": {
+      "num_agents": 5,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 50.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 5488.734,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 0.416,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 31.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 31.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 5.6479,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 124.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 191.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 191.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 5.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 5.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 35.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    },
+    "10": {
+      "num_agents": 10,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 50.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 9472.585,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 0.336,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 31.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 31.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 3.2726,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 62.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 387.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 387.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 10.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 10.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 35.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    }
+  },
+  "raw_runs_by_agent_count": {
+    "1": [
+      {
+        "seed": 42,
+        "num_agents": 1,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 50,
+        "configured_initial_step_budget": 50,
+        "actual_step_budget": 50,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 2520.098,
+        "hazard_encounters_total": 29,
+        "hazard_encounters_per_km": 11.507488994475612,
+        "hazard_encounters_per_1000_agent_steps": 580.0,
+        "hazard_sensing_agent_steps": 37,
+        "dynamic_hazard_sensing_agent_steps": 37,
+        "agent_busy_steps": 50,
+        "agent_utilization": 1.0,
+        "actual_node_encounters": 29,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 1,
+        "agents_with_hazard_in_sensing_neighborhood": 1,
+        "traversed_route_nodes_affected_by_damage": 29,
+        "communication_metrics": {
+          "transmissions": 34,
+          "deliveries": 34,
+          "dropped": 0,
+          "bytes_tx": 1524,
+          "bytes_rx": 1524,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 34,
+              "rx": 34,
+              "bytes_tx": 1524,
+              "bytes_rx": 1524,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 34,
+              "deliveries": 34,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 1524,
+              "bytes_rx": 1524,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 34
+            },
+            "local_messaging": {
+              "transmissions": 0,
+              "deliveries": 0,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 0,
+              "bytes_rx": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": null,
+              "delivery_delay_samples": 0
+            }
+          },
+          "tx_by_sender": {
+            "0": 34
+          },
+          "bytes_by_sender": {
+            "0": 1524
+          },
+          "rx_by_recipient": {
+            "-1": 34
+          }
+        },
+        "task_results": [
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 50,
+            "agent_steps": 50,
+            "path_distance_m": 2520.098,
+            "path_node_count": 51,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_001",
+            "agent_index": 0,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_002",
+            "agent_index": 0,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 0,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 0,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 0,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 0,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 0,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 0,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 0,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000",
+            "task_001",
+            "task_002",
+            "task_003",
+            "task_004",
+            "task_005",
+            "task_006",
+            "task_007",
+            "task_008",
+            "task_009"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ],
+    "2": [
+      {
+        "seed": 42,
+        "num_agents": 2,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 50,
+        "configured_initial_step_budget": 50,
+        "actual_step_budget": 50,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 3223.249,
+        "hazard_encounters_total": 30,
+        "hazard_encounters_per_km": 9.307378983131617,
+        "hazard_encounters_per_1000_agent_steps": 300.0,
+        "hazard_sensing_agent_steps": 75,
+        "dynamic_hazard_sensing_agent_steps": 75,
+        "agent_busy_steps": 64,
+        "agent_utilization": 0.64,
+        "actual_node_encounters": 30,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 2,
+        "agents_with_hazard_in_sensing_neighborhood": 2,
+        "traversed_route_nodes_affected_by_damage": 31,
+        "communication_metrics": {
+          "transmissions": 36,
+          "deliveries": 36,
+          "dropped": 0,
+          "bytes_tx": 1660,
+          "bytes_rx": 1660,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 36,
+              "rx": 36,
+              "bytes_tx": 1660,
+              "bytes_rx": 1660,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 36,
+              "deliveries": 36,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 1660,
+              "bytes_rx": 1660,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 36
+            },
+            "local_messaging": {
+              "transmissions": 0,
+              "deliveries": 0,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 0,
+              "bytes_rx": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": null,
+              "delivery_delay_samples": 0
+            }
+          },
+          "tx_by_sender": {
+            "1": 2,
+            "0": 34
+          },
+          "bytes_by_sender": {
+            "1": 136,
+            "0": 1524
+          },
+          "rx_by_recipient": {
+            "-1": 36
+          }
+        },
+        "task_results": [
+          {
+            "task_id": "task_001",
+            "agent_index": 1,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 1,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 1,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 1,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 1,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 50,
+            "agent_steps": 50,
+            "path_distance_m": 2520.098,
+            "path_node_count": 51,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_002",
+            "agent_index": 0,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 0,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 0,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 0,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000",
+            "task_002",
+            "task_004",
+            "task_006",
+            "task_008"
+          ],
+          [
+            "task_001",
+            "task_003",
+            "task_005",
+            "task_007",
+            "task_009"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ],
+    "3": [
+      {
+        "seed": 42,
+        "num_agents": 3,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 50,
+        "configured_initial_step_budget": 50,
+        "actual_step_budget": 50,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 4082.432,
+        "hazard_encounters_total": 31,
+        "hazard_encounters_per_km": 7.59351288643632,
+        "hazard_encounters_per_1000_agent_steps": 206.66666666666666,
+        "hazard_sensing_agent_steps": 115,
+        "dynamic_hazard_sensing_agent_steps": 115,
+        "agent_busy_steps": 76,
+        "agent_utilization": 0.5066666666666667,
+        "actual_node_encounters": 31,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 3,
+        "agents_with_hazard_in_sensing_neighborhood": 3,
+        "traversed_route_nodes_affected_by_damage": 35,
+        "communication_metrics": {
+          "transmissions": 39,
+          "deliveries": 39,
+          "dropped": 0,
+          "bytes_tx": 1812,
+          "bytes_rx": 1812,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 38,
+              "rx": 38,
+              "bytes_tx": 1784,
+              "bytes_rx": 1784,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            },
+            "hazard": {
+              "tx": 1,
+              "rx": 1,
+              "bytes_tx": 28,
+              "bytes_rx": 28,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 38,
+              "deliveries": 38,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 1784,
+              "bytes_rx": 1784,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 38
+            },
+            "local_messaging": {
+              "transmissions": 1,
+              "deliveries": 1,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 28,
+              "bytes_rx": 28,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 1
+            }
+          },
+          "tx_by_sender": {
+            "2": 3,
+            "1": 2,
+            "0": 34
+          },
+          "bytes_by_sender": {
+            "2": 152,
+            "1": 136,
+            "0": 1524
+          },
+          "rx_by_recipient": {
+            "-1": 38,
+            "1": 1
+          }
+        },
+        "task_results": [
+          {
+            "task_id": "task_002",
+            "agent_index": 2,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 2,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 2,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_001",
+            "agent_index": 1,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 1,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 1,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 50,
+            "agent_steps": 50,
+            "path_distance_m": 2520.098,
+            "path_node_count": 51,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 0,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 0,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 0,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000",
+            "task_003",
+            "task_006",
+            "task_009"
+          ],
+          [
+            "task_001",
+            "task_004",
+            "task_007"
+          ],
+          [
+            "task_002",
+            "task_005",
+            "task_008"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ],
+    "5": [
+      {
+        "seed": 42,
+        "num_agents": 5,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 50,
+        "configured_initial_step_budget": 50,
+        "actual_step_budget": 50,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 5488.734,
+        "hazard_encounters_total": 31,
+        "hazard_encounters_per_km": 5.647932656237304,
+        "hazard_encounters_per_1000_agent_steps": 124.0,
+        "hazard_sensing_agent_steps": 191,
+        "dynamic_hazard_sensing_agent_steps": 191,
+        "agent_busy_steps": 104,
+        "agent_utilization": 0.416,
+        "actual_node_encounters": 31,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 5,
+        "agents_with_hazard_in_sensing_neighborhood": 5,
+        "traversed_route_nodes_affected_by_damage": 35,
+        "communication_metrics": {
+          "transmissions": 46,
+          "deliveries": 51,
+          "dropped": 0,
+          "bytes_tx": 2204,
+          "bytes_rx": 2380,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 42,
+              "rx": 42,
+              "bytes_tx": 2056,
+              "bytes_rx": 2056,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            },
+            "hazard": {
+              "tx": 4,
+              "rx": 9,
+              "bytes_tx": 148,
+              "bytes_rx": 324,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 42,
+              "deliveries": 42,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 2056,
+              "bytes_rx": 2056,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 42
+            },
+            "local_messaging": {
+              "transmissions": 4,
+              "deliveries": 9,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 148,
+              "bytes_rx": 324,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 9
+            }
+          },
+          "tx_by_sender": {
+            "2": 3,
+            "1": 3,
+            "3": 3,
+            "4": 3,
+            "0": 34
+          },
+          "bytes_by_sender": {
+            "2": 152,
+            "1": 176,
+            "3": 176,
+            "4": 176,
+            "0": 1524
+          },
+          "rx_by_recipient": {
+            "-1": 42,
+            "1": 3,
+            "3": 3,
+            "4": 3
+          }
+        },
+        "task_results": [
+          {
+            "task_id": "task_002",
+            "agent_index": 2,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 2,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_001",
+            "agent_index": 1,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 1,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 3,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 3,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 4,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 4,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 50,
+            "agent_steps": 50,
+            "path_distance_m": 2520.098,
+            "path_node_count": 51,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 0,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 50,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000",
+            "task_005"
+          ],
+          [
+            "task_001",
+            "task_006"
+          ],
+          [
+            "task_002",
+            "task_007"
+          ],
+          [
+            "task_003",
+            "task_008"
+          ],
+          [
+            "task_004",
+            "task_009"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ],
+    "10": [
+      {
+        "seed": 42,
+        "num_agents": 10,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 50,
+        "configured_initial_step_budget": 50,
+        "actual_step_budget": 50,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 9472.585,
+        "hazard_encounters_total": 31,
+        "hazard_encounters_per_km": 3.2726019349522866,
+        "hazard_encounters_per_1000_agent_steps": 62.0,
+        "hazard_sensing_agent_steps": 387,
+        "dynamic_hazard_sensing_agent_steps": 387,
+        "agent_busy_steps": 168,
+        "agent_utilization": 0.336,
+        "actual_node_encounters": 31,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 10,
+        "agents_with_hazard_in_sensing_neighborhood": 10,
+        "traversed_route_nodes_affected_by_damage": 35,
+        "communication_metrics": {
+          "transmissions": 61,
+          "deliveries": 104,
+          "dropped": 0,
+          "bytes_tx": 3012,
+          "bytes_rx": 4396,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 52,
+              "rx": 52,
+              "bytes_tx": 2700,
+              "bytes_rx": 2700,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            },
+            "hazard": {
+              "tx": 9,
+              "rx": 52,
+              "bytes_tx": 312,
+              "bytes_rx": 1696,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 52,
+              "deliveries": 52,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 2700,
+              "bytes_rx": 2700,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 52
+            },
+            "local_messaging": {
+              "transmissions": 9,
+              "deliveries": 52,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 312,
+              "bytes_rx": 1696,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 52
+            }
+          },
+          "tx_by_sender": {
+            "2": 3,
+            "5": 3,
+            "7": 3,
+            "9": 3,
+            "1": 3,
+            "3": 3,
+            "4": 3,
+            "6": 3,
+            "8": 3,
+            "0": 34
+          },
+          "bytes_by_sender": {
+            "2": 152,
+            "5": 152,
+            "7": 152,
+            "9": 152,
+            "1": 176,
+            "3": 176,
+            "4": 176,
+            "6": 176,
+            "8": 176,
+            "0": 1524
+          },
+          "rx_by_recipient": {
+            "-1": 52,
+            "1": 8,
+            "3": 8,
+            "4": 8,
+            "5": 3,
+            "6": 8,
+            "7": 3,
+            "8": 8,
+            "9": 3,
+            "2": 3
+          }
+        },
+        "task_results": [
+          {
+            "task_id": "task_002",
+            "agent_index": 2,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 5,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 7,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 9,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_001",
+            "agent_index": 1,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 3,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 4,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 6,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 8,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 50,
+            "agent_steps": 50,
+            "path_distance_m": 2520.098,
+            "path_node_count": 51,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000"
+          ],
+          [
+            "task_001"
+          ],
+          [
+            "task_002"
+          ],
+          [
+            "task_003"
+          ],
+          [
+            "task_004"
+          ],
+          [
+            "task_005"
+          ],
+          [
+            "task_006"
+          ],
+          [
+            "task_007"
+          ],
+          [
+            "task_008"
+          ],
+          [
+            "task_009"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ]
+  }
+}

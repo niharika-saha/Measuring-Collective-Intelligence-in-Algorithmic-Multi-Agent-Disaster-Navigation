@@ -1,0 +1,156 @@
+{
+  "status": "FAIL",
+  "run_count": 30,
+  "errors": [
+    "Run 1, individual_serial: controlled hazard event missing",
+    "Run 2, individual_serial: controlled hazard event missing",
+    "Run 3, individual_serial: controlled hazard event missing",
+    "Run 4, individual_serial: controlled hazard event missing",
+    "Run 5, individual_serial: controlled hazard event missing",
+    "Run 6, individual_serial: controlled hazard event missing",
+    "Run 7, individual_serial: controlled hazard event missing",
+    "Run 8, individual_serial: controlled hazard event missing",
+    "Run 9, individual_serial: controlled hazard event missing",
+    "Run 10, individual_serial: controlled hazard event missing",
+    "Run 11, individual_serial: controlled hazard event missing",
+    "Run 12, individual_serial: controlled hazard event missing",
+    "Run 13, individual_serial: controlled hazard event missing",
+    "Run 14, individual_serial: controlled hazard event missing",
+    "Run 15, individual_serial: controlled hazard event missing",
+    "Run 16, individual_serial: controlled hazard event missing",
+    "Run 17, individual_serial: controlled hazard event missing",
+    "Run 18, individual_serial: controlled hazard event missing",
+    "Run 19, individual_serial: controlled hazard event missing",
+    "Run 20, individual_serial: controlled hazard event missing",
+    "Run 21, individual_serial: controlled hazard event missing",
+    "Run 22, individual_serial: controlled hazard event missing",
+    "Run 23, individual_serial: controlled hazard event missing",
+    "Run 24, individual_serial: controlled hazard event missing",
+    "Run 25, individual_serial: controlled hazard event missing",
+    "Run 26, individual_serial: controlled hazard event missing",
+    "Run 27, individual_serial: controlled hazard event missing",
+    "Run 28, individual_serial: controlled hazard event missing",
+    "Run 29, individual_serial: controlled hazard event missing",
+    "Run 30, individual_serial: controlled hazard event missing",
+    "Controlled event parity: 0/30 runs passed"
+  ],
+  "warnings": [],
+  "controlled_event_parity": {
+    "runs_checked": 30,
+    "all_three_arms_match": 0
+  },
+  "coordination_diagnostics": {
+    "runs_with_teammate_information": 30,
+    "total_transmissions": 2654,
+    "total_deliveries": 5051,
+    "planner_replan_source_counts": {
+      "self_observation": 1,
+      "teammate_message": 229,
+      "shared_memory": 41,
+      "unattributed": 0
+    }
+  },
+  "paired_effects_recomputed_from_raw_runs": {
+    "coordination_distance_delta_m_vs_independent": {
+      "n": 30,
+      "mean": -66.22064666666662,
+      "sd": 74.55088200799607,
+      "median": -32.29349999999965,
+      "paired_t_test": {
+        "statistic": -4.865206282606065,
+        "p_value": 3.6893008281247847e-05
+      },
+      "mean_95pct_CI": [
+        -94.05840350918137,
+        -38.382889824151874
+      ],
+      "wilcoxon": {
+        "statistic": 0.0,
+        "p_value": 1.821529714896801e-05
+      }
+    },
+    "coordination_makespan_delta_steps_vs_independent": {
+      "n": 30,
+      "mean": -1.2333333333333334,
+      "sd": 4.328600421521418,
+      "median": -1.0,
+      "paired_t_test": {
+        "statistic": -1.5606071750837909,
+        "p_value": 0.12946429158937403
+      },
+      "mean_95pct_CI": [
+        -2.849659294303129,
+        0.38299262763646214
+      ],
+      "wilcoxon": {
+        "statistic": 61.5,
+        "p_value": 0.05965659529240273
+      }
+    },
+    "coordination_agent_steps_delta_vs_independent": {
+      "n": 30,
+      "mean": -17.833333333333332,
+      "sd": 32.3292152846236,
+      "median": -8.5,
+      "paired_t_test": {
+        "statistic": -3.021328806214847,
+        "p_value": 0.005213799446523204
+      },
+      "mean_95pct_CI": [
+        -29.90526071718555,
+        -5.761405949481118
+      ],
+      "wilcoxon": {
+        "statistic": 26.0,
+        "p_value": 0.0018627850372954886
+      }
+    },
+    "coordination_success_rate_delta_vs_independent": {
+      "n": 30,
+      "mean": 0.0,
+      "sd": 0.0,
+      "median": 0.0,
+      "paired_t_test": {
+        "statistic": NaN,
+        "p_value": NaN
+      },
+      "mean_95pct_CI": [
+        0.0,
+        0.0
+      ],
+      "wilcoxon": {
+        "statistic": 0.0,
+        "p_value": 1.0
+      }
+    },
+    "parallelism_success_rate_delta_vs_individual": {
+      "n": 30,
+      "mean": 0.0,
+      "sd": 0.0,
+      "median": 0.0,
+      "paired_t_test": {
+        "statistic": NaN,
+        "p_value": NaN
+      },
+      "mean_95pct_CI": [
+        0.0,
+        0.0
+      ],
+      "wilcoxon": {
+        "statistic": 0.0,
+        "p_value": 1.0
+      }
+    }
+  },
+  "stored_aggregate_means_match": {
+    "coordination_distance_delta_m_vs_independent": true,
+    "coordination_makespan_delta_steps_vs_independent": true,
+    "coordination_agent_steps_delta_vs_independent": true,
+    "coordination_success_rate_delta_vs_independent": true,
+    "parallelism_success_rate_delta_vs_individual": true
+  },
+  "anomalies_to_inspect_not_exclude": [
+    "Run 13: more than nine successful planner replans",
+    "Run 17: more than nine successful planner replans"
+  ]
+}

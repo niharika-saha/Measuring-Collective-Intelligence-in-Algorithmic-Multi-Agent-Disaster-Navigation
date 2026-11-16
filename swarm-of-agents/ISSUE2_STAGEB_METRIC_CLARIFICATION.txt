@@ -1,0 +1,27 @@
+Issue 2 Stage B metric clarification
+
+Replace swarm_simulation_dynamic.py with the supplied file.
+
+This update does not change event detection, agent awareness, replanning, or response attribution.
+It clarifies metric scopes:
+- affected_pairs_responded: responses by agents in the event's initial affected_agent set
+- response_records_outside_initial_affected_set: responses by agents not in that initial set
+- successful_responses_among_affected_pairs: successful responses within the initial affected set
+- successful_responses_outside_initial_affected_set: successful responses outside that set
+- successful_responses: all successful event-linked responses
+
+Legacy fields remain for compatibility:
+- agents_became_aware
+- agents_responded
+
+The JSON definitions now explicitly state that coverage is limited to initially affected agent-event pairs, while total successful responses can include agents informed later by teammates.
+
+For the supplied run, the expected interpretation is:
+- 1 initially affected pair
+- 1 affected pair aware
+- 0 responses among initially affected pairs
+- 1 response outside the initial affected set
+- 1 successful response outside the initial affected set
+This corresponds to Agent 0 discovering the event and Agent 1 receiving the teammate message and replanning.
+
+Validation performed here: Python compilation passed. Re-run the full Windows tests after replacing the file.

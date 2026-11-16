@@ -1,9 +1,6 @@
-# Large experiment outputs
 swarm-of-agents/pheromone_weight_*.json
 swarm-of-agents/pheromone_policy_diagnostics.json
 swarm-of-agents/stage2_audit_bundle.zip
-
-# Python cache
 __pycache__/
 *.pyc
 .pytest_cache/

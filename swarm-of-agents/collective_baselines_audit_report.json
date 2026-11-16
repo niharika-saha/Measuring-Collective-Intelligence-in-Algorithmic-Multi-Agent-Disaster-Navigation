@@ -1,0 +1,3170 @@
+{
+  "input": "collective_baselines_30runs.json",
+  "runs": 30,
+  "passes": 632,
+  "warnings": 0,
+  "failures": 0,
+  "result": "PASS",
+  "checks": [
+    {
+      "status": "PASS",
+      "name": "Run count",
+      "detail": "JSON=30, declared=30"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 seed",
+      "detail": "42"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 coordinated communication",
+      "detail": "Transmissions=19, deliveries=51"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/individual_serial budget use",
+      "detail": "471/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/independent_multi_agent budget use",
+      "detail": "264/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1/coordinated_swarm budget use",
+      "detail": "247/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-92.219600; recorded=-92.2195999999999"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-3.000000; recorded=-3.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-17.000000; recorded=-17.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 1 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 seed",
+      "detail": "84"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 coordinated communication",
+      "detail": "Transmissions=101, deliveries=104"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/individual_serial budget use",
+      "detail": "783/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/independent_multi_agent budget use",
+      "detail": "344/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2/coordinated_swarm budget use",
+      "detail": "397/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-61.887400; recorded=-61.88740000000007"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=7.000000; recorded=7.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=53.000000; recorded=53.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 2 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 seed",
+      "detail": "126"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 coordinated communication",
+      "detail": "Transmissions=112, deliveries=166"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/individual_serial budget use",
+      "detail": "491/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/independent_multi_agent budget use",
+      "detail": "264/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3/coordinated_swarm budget use",
+      "detail": "257/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-0.508900; recorded=-0.5089000000000397"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-1.000000; recorded=-1.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-7.000000; recorded=-7.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 3 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 seed",
+      "detail": "168"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 coordinated communication",
+      "detail": "Transmissions=172, deliveries=201"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/individual_serial budget use",
+      "detail": "1042/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/independent_multi_agent budget use",
+      "detail": "714/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4/coordinated_swarm budget use",
+      "detail": "574/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-142.790200; recorded=-142.79019999999946"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-10.000000; recorded=-10.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-140.000000; recorded=-140.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 4 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 seed",
+      "detail": "210"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 coordinated communication",
+      "detail": "Transmissions=91, deliveries=99"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/individual_serial budget use",
+      "detail": "768/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/independent_multi_agent budget use",
+      "detail": "414/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5/coordinated_swarm budget use",
+      "detail": "404/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-13.513500; recorded=-13.513500000000477"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=2.000000; recorded=2.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-10.000000; recorded=-10.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 5 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 seed",
+      "detail": "252"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 coordinated communication",
+      "detail": "Transmissions=50, deliveries=80"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/individual_serial budget use",
+      "detail": "1120/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/independent_multi_agent budget use",
+      "detail": "654/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6/coordinated_swarm budget use",
+      "detail": "598/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-172.081000; recorded=-172.08099999999968"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-7.000000; recorded=-7.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-56.000000; recorded=-56.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 6 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 seed",
+      "detail": "294"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 coordinated communication",
+      "detail": "Transmissions=23, deliveries=31"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/individual_serial budget use",
+      "detail": "398/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/independent_multi_agent budget use",
+      "detail": "234/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7/coordinated_swarm budget use",
+      "detail": "209/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-143.607800; recorded=-143.6078"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-3.000000; recorded=-3.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-25.000000; recorded=-25.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 7 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 seed",
+      "detail": "336"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 coordinated communication",
+      "detail": "Transmissions=147, deliveries=155"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/individual_serial budget use",
+      "detail": "815/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/independent_multi_agent budget use",
+      "detail": "484/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8/coordinated_swarm budget use",
+      "detail": "430/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-36.238400; recorded=-36.23839999999973"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-1.000000; recorded=-1.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-54.000000; recorded=-54.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 8 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 seed",
+      "detail": "378"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 coordinated communication",
+      "detail": "Transmissions=40, deliveries=45"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/individual_serial budget use",
+      "detail": "986/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/independent_multi_agent budget use",
+      "detail": "554/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9/coordinated_swarm budget use",
+      "detail": "520/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-143.265000; recorded=-143.26500000000033"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-4.000000; recorded=-4.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-34.000000; recorded=-34.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 9 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 seed",
+      "detail": "420"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 coordinated communication",
+      "detail": "Transmissions=109, deliveries=185"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/individual_serial budget use",
+      "detail": "735/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/independent_multi_agent budget use",
+      "detail": "384/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10/coordinated_swarm budget use",
+      "detail": "384/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 10 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 seed",
+      "detail": "462"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 coordinated communication",
+      "detail": "Transmissions=85, deliveries=164"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/individual_serial budget use",
+      "detail": "1438/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/independent_multi_agent budget use",
+      "detail": "754/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11/coordinated_swarm budget use",
+      "detail": "754/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 11 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 seed",
+      "detail": "504"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 coordinated communication",
+      "detail": "Transmissions=13, deliveries=29"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/individual_serial budget use",
+      "detail": "532/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/independent_multi_agent budget use",
+      "detail": "334/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12/coordinated_swarm budget use",
+      "detail": "287/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-28.348600; recorded=-28.34859999999958"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-7.000000; recorded=-7.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-47.000000; recorded=-47.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 12 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 seed",
+      "detail": "546"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 coordinated communication",
+      "detail": "Transmissions=313, deliveries=1387"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/individual_serial budget use",
+      "detail": "1102/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/independent_multi_agent budget use",
+      "detail": "664/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13/coordinated_swarm budget use",
+      "detail": "618/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-133.449500; recorded=-133.44950000000017"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-8.000000; recorded=-8.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-46.000000; recorded=-46.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 13 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 seed",
+      "detail": "588"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 coordinated communication",
+      "detail": "Transmissions=49, deliveries=129"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/individual_serial budget use",
+      "detail": "911/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/independent_multi_agent budget use",
+      "detail": "504/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14/coordinated_swarm budget use",
+      "detail": "479/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-81.098400; recorded=-81.0983999999994"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-3.000000; recorded=-3.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-25.000000; recorded=-25.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 14 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 seed",
+      "detail": "630"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 coordinated communication",
+      "detail": "Transmissions=154, deliveries=221"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/individual_serial budget use",
+      "detail": "968/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/independent_multi_agent budget use",
+      "detail": "494/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15/coordinated_swarm budget use",
+      "detail": "494/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 15 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 seed",
+      "detail": "672"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 coordinated communication",
+      "detail": "Transmissions=55, deliveries=63"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/individual_serial budget use",
+      "detail": "963/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/independent_multi_agent budget use",
+      "detail": "504/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16/coordinated_swarm budget use",
+      "detail": "504/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-1.614800; recorded=-1.614799999999832"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 16 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 seed",
+      "detail": "714"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 coordinated communication",
+      "detail": "Transmissions=57, deliveries=137"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/individual_serial budget use",
+      "detail": "564/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/independent_multi_agent budget use",
+      "detail": "294/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17/coordinated_swarm budget use",
+      "detail": "294/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-0.455300; recorded=-0.4553000000000793"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 17 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 seed",
+      "detail": "756"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 coordinated communication",
+      "detail": "Transmissions=27, deliveries=66"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/individual_serial budget use",
+      "detail": "565/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/independent_multi_agent budget use",
+      "detail": "304/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18/coordinated_swarm budget use",
+      "detail": "295/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-92.022600; recorded=-92.02260000000024"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-1.000000; recorded=-1.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-9.000000; recorded=-9.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 18 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 seed",
+      "detail": "798"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 coordinated communication",
+      "detail": "Transmissions=87, deliveries=93"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/individual_serial budget use",
+      "detail": "765/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/independent_multi_agent budget use",
+      "detail": "404/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19/coordinated_swarm budget use",
+      "detail": "396/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-130.105000; recorded=-130.10499999999956"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=4.000000; recorded=4.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-8.000000; recorded=-8.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 19 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 seed",
+      "detail": "840"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 coordinated communication",
+      "detail": "Transmissions=80, deliveries=84"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/individual_serial budget use",
+      "detail": "740/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/independent_multi_agent budget use",
+      "detail": "414/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20/coordinated_swarm budget use",
+      "detail": "392/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-237.186200; recorded=-237.1862000000001"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=1.000000; recorded=1.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-22.000000; recorded=-22.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 20 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 seed",
+      "detail": "882"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 coordinated communication",
+      "detail": "Transmissions=133, deliveries=211"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/individual_serial budget use",
+      "detail": "1134/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/independent_multi_agent budget use",
+      "detail": "594/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21/coordinated_swarm budget use",
+      "detail": "594/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 21 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 seed",
+      "detail": "924"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 coordinated communication",
+      "detail": "Transmissions=126, deliveries=196"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/individual_serial budget use",
+      "detail": "953/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/independent_multi_agent budget use",
+      "detail": "473/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22/coordinated_swarm budget use",
+      "detail": "485/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-5.731100; recorded=-5.731099999999515"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=12.000000; recorded=12.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=12.000000; recorded=12.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 22 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 seed",
+      "detail": "966"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 coordinated communication",
+      "detail": "Transmissions=77, deliveries=145"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/individual_serial budget use",
+      "detail": "947/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/independent_multi_agent budget use",
+      "detail": "504/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23/coordinated_swarm budget use",
+      "detail": "497/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-25.491300; recorded=-25.491300000000138"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-1.000000; recorded=-1.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-7.000000; recorded=-7.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 23 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 seed",
+      "detail": "1008"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 coordinated communication",
+      "detail": "Transmissions=69, deliveries=149"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/individual_serial budget use",
+      "detail": "1476/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/independent_multi_agent budget use",
+      "detail": "774/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24/coordinated_swarm budget use",
+      "detail": "774/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 24 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 seed",
+      "detail": "1050"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 coordinated communication",
+      "detail": "Transmissions=129, deliveries=209"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/individual_serial budget use",
+      "detail": "1288/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/independent_multi_agent budget use",
+      "detail": "674/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25/coordinated_swarm budget use",
+      "detail": "675/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-16.043000; recorded=-16.043000000000575"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-1.000000; recorded=-1.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=1.000000; recorded=1.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 25 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 seed",
+      "detail": "1092"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 coordinated communication",
+      "detail": "Transmissions=53, deliveries=107"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/individual_serial budget use",
+      "detail": "1069/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/independent_multi_agent budget use",
+      "detail": "604/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26/coordinated_swarm budget use",
+      "detail": "565/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-149.139400; recorded=-149.1393999999991"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-6.000000; recorded=-6.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-39.000000; recorded=-39.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 26 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 seed",
+      "detail": "1134"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 coordinated communication",
+      "detail": "Transmissions=29, deliveries=53"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/individual_serial budget use",
+      "detail": "685/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/independent_multi_agent budget use",
+      "detail": "404/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27/coordinated_swarm budget use",
+      "detail": "363/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-236.588000; recorded=-236.5880000000002"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-5.000000; recorded=-5.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-41.000000; recorded=-41.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 27 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 seed",
+      "detail": "1176"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 coordinated communication",
+      "detail": "Transmissions=115, deliveries=195"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/individual_serial budget use",
+      "detail": "1020/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/independent_multi_agent budget use",
+      "detail": "534/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28/coordinated_swarm budget use",
+      "detail": "534/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-1.408100; recorded=-1.4081000000005588"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 28 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 seed",
+      "detail": "1218"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 coordinated communication",
+      "detail": "Transmissions=58, deliveries=137"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/individual_serial budget use",
+      "detail": "474/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/independent_multi_agent budget use",
+      "detail": "263/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29/coordinated_swarm budget use",
+      "detail": "249/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=-41.826300; recorded=-41.82629999999995"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=-2.000000; recorded=-2.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=-14.000000; recorded=-14.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 29 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 arm presence",
+      "detail": "All three arms exist"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 seed",
+      "detail": "1260"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 task manifest",
+      "detail": "Shared paired-run manifest present"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 controlled-event parity",
+      "detail": "All three arms have matching event signatures"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/individual_serial communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/individual_serial awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/independent_multi_agent communication",
+      "detail": "All zero: {'transmissions': 0, 'deliveries': 0, 'dropped': 0, 'bytes_tx': 0}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/independent_multi_agent awareness isolation",
+      "detail": "No teammate/shared-memory source: ['self_observation']"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 coordinated communication",
+      "detail": "Transmissions=81, deliveries=159"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 design coordination flags",
+      "detail": "Independent=False; coordinated=True"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/individual_serial declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/individual_serial budget use",
+      "detail": "944/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/independent_multi_agent declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/independent_multi_agent budget use",
+      "detail": "494/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/coordinated_swarm declared budget",
+      "detail": "Budget=2000; expected=2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30/coordinated_swarm budget use",
+      "detail": "494/2000"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 cross-arm budget parity",
+      "detail": "{'individual_serial': 2000, 'independent_multi_agent': 2000, 'coordinated_swarm': 2000}"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 coordination_distance_delta_m_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 coordination_makespan_delta_steps_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 coordination_agent_steps_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Run 30 coordination_success_rate_delta_vs_independent",
+      "detail": "Recomputed=0.000000; recorded=0.0"
+    },
+    {
+      "status": "PASS",
+      "name": "Unique run seeds",
+      "detail": "[42, 84, 126, 168, 210, 252, 294, 336, 378, 420, 462, 504, 546, 588, 630, 672, 714, 756, 798, 840, 882, 924, 966, 1008, 1050, 1092, 1134, 1176, 1218, 1260]"
+    }
+  ]
+}

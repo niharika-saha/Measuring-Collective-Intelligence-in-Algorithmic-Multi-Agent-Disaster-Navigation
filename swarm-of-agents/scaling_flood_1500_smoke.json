@@ -1,0 +1,4185 @@
+{
+  "experiment": "fixed_workload_multi_agent_scaling",
+  "schema_version": "1.1",
+  "disaster_type": "flood",
+  "fixed_task_count": 10,
+  "agent_counts": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "runs": 1,
+  "seeds": [
+    42
+  ],
+  "simulation_step_budget": 1500,
+  "serial_baseline_max_step_budget": 1500,
+  "serial_baseline_budget_policy": "Replay the same seed and fixed task manifest with geometrically increasing step budgets until all ten tasks complete or the serial maximum budget is reached. Parallel arms use the initial budget.",
+  "serial_step_growth_factor": 2.0,
+  "task_assignment": "Deterministic round-robin partition of the same ten-task manifest; each agent executes its queue serially.",
+  "repositioning_cost_included": true,
+  "communication_configuration": {
+    "shared_memory": true,
+    "local_messaging": true,
+    "pheromones": true,
+    "radius_m": 500.0,
+    "delay_steps": 0,
+    "board_delay_steps": 0,
+    "sync_on_contact": true
+  },
+  "summary_by_agent_count": {
+    "1": {
+      "num_agents": 1,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 1500.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 187737.419,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 410.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 410.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 2.1839,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 273.3333,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 763.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 763.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 410.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    },
+    "2": {
+      "num_agents": 2,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 1500.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 188562.511,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 0.5047,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 409.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 409.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 2.169,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 136.3333,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 2248.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 2248.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 2.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 2.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 410.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    },
+    "3": {
+      "num_agents": 3,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 1500.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 203307.486,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 0.3391,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 397.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 397.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 1.9527,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 88.2222,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 3722.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 3722.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 3.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 3.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 401.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    },
+    "5": {
+      "num_agents": 5,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 1500.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 204713.788,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 0.2072,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 397.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 397.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 1.9393,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 52.9333,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 6698.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 6698.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 5.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 5.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 401.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    },
+    "10": {
+      "num_agents": 10,
+      "runs": 1,
+      "metrics": {
+        "completion_rate": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "observed_simulation_steps": {
+          "mean": 1500.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "workload_makespan_steps": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "throughput_tasks_per_step": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "total_distance_travelled_m": {
+          "mean": 208697.639,
+          "std": 0.0,
+          "n": 1
+        },
+        "agent_utilization": {
+          "mean": 0.1079,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_node_encounters": {
+          "mean": 397.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "actual_edge_encounters": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_total": {
+          "mean": 397.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_km": {
+          "mean": 1.9023,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_encounters_per_1000_agent_steps": {
+          "mean": 26.4667,
+          "std": 0.0,
+          "n": 1
+        },
+        "hazard_sensing_agent_steps": {
+          "mean": 14144.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "dynamic_hazard_sensing_agent_steps": {
+          "mean": 14144.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_encountered_hazard": {
+          "mean": 10.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "agents_with_hazard_in_sensing_neighborhood": {
+          "mean": 10.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "traversed_route_nodes_affected_by_damage": {
+          "mean": 401.0,
+          "std": 0.0,
+          "n": 1
+        },
+        "parallel_speedup": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        },
+        "scaling_efficiency": {
+          "mean": null,
+          "std": null,
+          "n": 0
+        }
+      }
+    }
+  },
+  "raw_runs_by_agent_count": {
+    "1": [
+      {
+        "seed": 42,
+        "num_agents": 1,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 1500,
+        "configured_initial_step_budget": 1500,
+        "actual_step_budget": 1500,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 187737.419,
+        "hazard_encounters_total": 410,
+        "hazard_encounters_per_km": 2.183901335087599,
+        "hazard_encounters_per_1000_agent_steps": 273.3333333333333,
+        "hazard_sensing_agent_steps": 763,
+        "dynamic_hazard_sensing_agent_steps": 763,
+        "agent_busy_steps": 1500,
+        "agent_utilization": 1.0,
+        "actual_node_encounters": 410,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 1,
+        "agents_with_hazard_in_sensing_neighborhood": 1,
+        "traversed_route_nodes_affected_by_damage": 410,
+        "communication_metrics": {
+          "transmissions": 522,
+          "deliveries": 522,
+          "dropped": 0,
+          "bytes_tx": 21288,
+          "bytes_rx": 21288,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 522,
+              "rx": 522,
+              "bytes_tx": 21288,
+              "bytes_rx": 21288,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 522,
+              "deliveries": 522,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 21288,
+              "bytes_rx": 21288,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 522
+            },
+            "local_messaging": {
+              "transmissions": 0,
+              "deliveries": 0,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 0,
+              "bytes_rx": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": null,
+              "delivery_delay_samples": 0
+            }
+          },
+          "tx_by_sender": {
+            "0": 522
+          },
+          "bytes_by_sender": {
+            "0": 21288
+          },
+          "rx_by_recipient": {
+            "-1": 522
+          }
+        },
+        "planner_stats_by_agent": {
+          "0": {
+            "replans": 189,
+            "plan_invalidations": 188,
+            "plan_attempts": 189,
+            "plan_successes": 189,
+            "plan_failures": 0,
+            "plan_expansions_total": 219947,
+            "plan_expansions_last": 15177,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 8.13609309977619,
+            "plan_time_seconds_last": 0.6363546999637038
+          }
+        },
+        "performance": {
+          "started_at": 326418.576047,
+          "flood_update_seconds": 5.97636019840138,
+          "flood_update_calls": 1500,
+          "progress_reports": [
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 1,
+              "astar_expansions": 792,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 0,
+              "flood_update_seconds": 0.1623301000217907
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 50,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 12,
+              "astar_expansions": 2141,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 271,
+              "flood_update_seconds": 5.9385200999095105
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 29,
+              "astar_expansions": 13427,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 852,
+              "flood_update_seconds": 5.9399588001542725
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 44,
+              "astar_expansions": 28924,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1065,
+              "flood_update_seconds": 5.941693999979179
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 49,
+              "astar_expansions": 32841,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1213,
+              "flood_update_seconds": 5.943590299750213
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 52,
+              "astar_expansions": 34769,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1535,
+              "flood_update_seconds": 5.944452699739486
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 53,
+              "astar_expansions": 36043,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1786,
+              "flood_update_seconds": 5.945193899853621
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 65,
+              "astar_expansions": 39287,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2127,
+              "flood_update_seconds": 5.94595979998121
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 75,
+              "astar_expansions": 40961,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2553,
+              "flood_update_seconds": 5.9467661998351105
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 83,
+              "astar_expansions": 46183,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3059,
+              "flood_update_seconds": 5.947541299916338
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 90,
+              "astar_expansions": 51166,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3405,
+              "flood_update_seconds": 5.948271200526506
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 550,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 97,
+              "astar_expansions": 60794,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3506,
+              "flood_update_seconds": 5.9491428002365865
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 600,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 105,
+              "astar_expansions": 77266,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3651,
+              "flood_update_seconds": 5.949895000318065
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 650,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 117,
+              "astar_expansions": 97225,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4039,
+              "flood_update_seconds": 5.950955800362863
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 700,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 125,
+              "astar_expansions": 105070,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4437,
+              "flood_update_seconds": 5.9524902001721784
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 750,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 134,
+              "astar_expansions": 116436,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4783,
+              "flood_update_seconds": 5.954044299898669
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 800,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 144,
+              "astar_expansions": 129553,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4912,
+              "flood_update_seconds": 5.955730699584819
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 850,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 154,
+              "astar_expansions": 142932,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5025,
+              "flood_update_seconds": 5.957169699599035
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 900,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 158,
+              "astar_expansions": 147099,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5121,
+              "flood_update_seconds": 5.958457199449185
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 950,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 163,
+              "astar_expansions": 150890,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5262,
+              "flood_update_seconds": 5.959946999384556
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1000,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 165,
+              "astar_expansions": 155677,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5488,
+              "flood_update_seconds": 5.961704399203882
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1050,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 166,
+              "astar_expansions": 161312,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5885,
+              "flood_update_seconds": 5.963244098878931
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 168,
+              "astar_expansions": 166894,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6030,
+              "flood_update_seconds": 5.9647670988342725
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 169,
+              "astar_expansions": 168652,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6112,
+              "flood_update_seconds": 5.9663277988438495
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 172,
+              "astar_expansions": 175216,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6409,
+              "flood_update_seconds": 5.967742198787164
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 177,
+              "astar_expansions": 184096,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7395,
+              "flood_update_seconds": 5.969152498466428
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 181,
+              "astar_expansions": 192389,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7776,
+              "flood_update_seconds": 5.970484498131555
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 187,
+              "astar_expansions": 202586,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8120,
+              "flood_update_seconds": 5.9720296982559375
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 189,
+              "astar_expansions": 219947,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8628,
+              "flood_update_seconds": 5.9733913980890065
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 189,
+              "astar_expansions": 219947,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8683,
+              "flood_update_seconds": 5.974905998155009
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 1,
+              "step": 1500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 189,
+              "astar_expansions": 219947,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8735,
+              "flood_update_seconds": 5.97636019840138
+            }
+          ],
+          "elapsed_seconds": 45.34421899996232
+        },
+        "task_results": [
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 1500,
+            "agent_steps": 1500,
+            "path_distance_m": 187737.419,
+            "path_node_count": 1501,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_001",
+            "agent_index": 0,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_002",
+            "agent_index": 0,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 0,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 0,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 0,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 0,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 0,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 0,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 0,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000",
+            "task_001",
+            "task_002",
+            "task_003",
+            "task_004",
+            "task_005",
+            "task_006",
+            "task_007",
+            "task_008",
+            "task_009"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ],
+    "2": [
+      {
+        "seed": 42,
+        "num_agents": 2,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 1500,
+        "configured_initial_step_budget": 1500,
+        "actual_step_budget": 1500,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 188562.511,
+        "hazard_encounters_total": 409,
+        "hazard_encounters_per_km": 2.169041968262716,
+        "hazard_encounters_per_1000_agent_steps": 136.33333333333334,
+        "hazard_sensing_agent_steps": 2248,
+        "dynamic_hazard_sensing_agent_steps": 2248,
+        "agent_busy_steps": 1514,
+        "agent_utilization": 0.5046666666666667,
+        "actual_node_encounters": 409,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 2,
+        "agents_with_hazard_in_sensing_neighborhood": 2,
+        "traversed_route_nodes_affected_by_damage": 410,
+        "communication_metrics": {
+          "transmissions": 522,
+          "deliveries": 522,
+          "dropped": 0,
+          "bytes_tx": 21372,
+          "bytes_rx": 21372,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 522,
+              "rx": 522,
+              "bytes_tx": 21372,
+              "bytes_rx": 21372,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 522,
+              "deliveries": 522,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 21372,
+              "bytes_rx": 21372,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 522
+            },
+            "local_messaging": {
+              "transmissions": 0,
+              "deliveries": 0,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 0,
+              "bytes_rx": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": null,
+              "delivery_delay_samples": 0
+            }
+          },
+          "tx_by_sender": {
+            "1": 2,
+            "0": 520
+          },
+          "bytes_by_sender": {
+            "1": 136,
+            "0": 21236
+          },
+          "rx_by_recipient": {
+            "-1": 522
+          }
+        },
+        "planner_stats_by_agent": {
+          "0": {
+            "replans": 187,
+            "plan_invalidations": 186,
+            "plan_attempts": 187,
+            "plan_successes": 187,
+            "plan_failures": 0,
+            "plan_expansions_total": 218300,
+            "plan_expansions_last": 15177,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 9.309491899912246,
+            "plan_time_seconds_last": 0.6492622999940068
+          },
+          "1": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 5383,
+            "plan_expansions_last": 5383,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.18636570003582165,
+            "plan_time_seconds_last": 0.18636570003582165
+          }
+        },
+        "performance": {
+          "started_at": 326468.3381953,
+          "flood_update_seconds": 6.045015599695034,
+          "flood_update_calls": 1500,
+          "progress_reports": [
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1,
+              "active_agents": 2,
+              "completed_agents": 0,
+              "planning_attempts": 2,
+              "astar_expansions": 6175,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 0,
+              "flood_update_seconds": 0.15978280000854284
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 50,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 13,
+              "astar_expansions": 7524,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 283,
+              "flood_update_seconds": 6.000412399997003
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 28,
+              "astar_expansions": 17179,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 825,
+              "flood_update_seconds": 6.002002699882723
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 43,
+              "astar_expansions": 32669,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1045,
+              "flood_update_seconds": 6.003484599583317
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 48,
+              "astar_expansions": 36584,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1193,
+              "flood_update_seconds": 6.005118199682329
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 52,
+              "astar_expansions": 39782,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1630,
+              "flood_update_seconds": 6.006648999755271
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 52,
+              "astar_expansions": 39782,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1781,
+              "flood_update_seconds": 6.008493199828081
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 64,
+              "astar_expansions": 43026,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2118,
+              "flood_update_seconds": 6.0101332000340335
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 74,
+              "astar_expansions": 44700,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2537,
+              "flood_update_seconds": 6.01170909992652
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 83,
+              "astar_expansions": 50692,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3044,
+              "flood_update_seconds": 6.013171600003261
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 89,
+              "astar_expansions": 54905,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3387,
+              "flood_update_seconds": 6.014572500076611
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 550,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 96,
+              "astar_expansions": 64533,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3487,
+              "flood_update_seconds": 6.01642329985043
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 600,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 104,
+              "astar_expansions": 81005,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3631,
+              "flood_update_seconds": 6.017994799884036
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 650,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 117,
+              "astar_expansions": 102118,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4046,
+              "flood_update_seconds": 6.019328899856191
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 700,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 124,
+              "astar_expansions": 108809,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4427,
+              "flood_update_seconds": 6.020802199782338
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 750,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 133,
+              "astar_expansions": 120175,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4763,
+              "flood_update_seconds": 6.022252699593082
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 800,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 143,
+              "astar_expansions": 133292,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4892,
+              "flood_update_seconds": 6.023590199591126
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 850,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 153,
+              "astar_expansions": 146671,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5007,
+              "flood_update_seconds": 6.02511559962295
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 900,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 158,
+              "astar_expansions": 151553,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5104,
+              "flood_update_seconds": 6.026490399381146
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 950,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 162,
+              "astar_expansions": 154629,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5242,
+              "flood_update_seconds": 6.028209499374498
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1000,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 165,
+              "astar_expansions": 165048,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5787,
+              "flood_update_seconds": 6.029802499222569
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1050,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 165,
+              "astar_expansions": 165048,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5865,
+              "flood_update_seconds": 6.0312827990273945
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 167,
+              "astar_expansions": 170630,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6011,
+              "flood_update_seconds": 6.032771799131297
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 168,
+              "astar_expansions": 172388,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6096,
+              "flood_update_seconds": 6.034250799159054
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 171,
+              "astar_expansions": 178952,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6401,
+              "flood_update_seconds": 6.035923099203501
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 176,
+              "astar_expansions": 187832,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7388,
+              "flood_update_seconds": 6.03734539920697
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 180,
+              "astar_expansions": 196125,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7756,
+              "flood_update_seconds": 6.038815699052066
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 187,
+              "astar_expansions": 208506,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8145,
+              "flood_update_seconds": 6.0402545992983505
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 188,
+              "astar_expansions": 223683,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8608,
+              "flood_update_seconds": 6.042040299333166
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 188,
+              "astar_expansions": 223683,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8663,
+              "flood_update_seconds": 6.043477899511345
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 2,
+              "step": 1500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 188,
+              "astar_expansions": 223683,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8715,
+              "flood_update_seconds": 6.045015599695034
+            }
+          ],
+          "elapsed_seconds": 57.180397999996785
+        },
+        "task_results": [
+          {
+            "task_id": "task_001",
+            "agent_index": 1,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 1,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 1,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 1,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 1,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 1500,
+            "agent_steps": 1500,
+            "path_distance_m": 187859.36,
+            "path_node_count": 1501,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_002",
+            "agent_index": 0,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 0,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 0,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 0,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000",
+            "task_002",
+            "task_004",
+            "task_006",
+            "task_008"
+          ],
+          [
+            "task_001",
+            "task_003",
+            "task_005",
+            "task_007",
+            "task_009"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ],
+    "3": [
+      {
+        "seed": 42,
+        "num_agents": 3,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 1500,
+        "configured_initial_step_budget": 1500,
+        "actual_step_budget": 1500,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 203307.486,
+        "hazard_encounters_total": 397,
+        "hazard_encounters_per_km": 1.9527072406964885,
+        "hazard_encounters_per_1000_agent_steps": 88.22222222222221,
+        "hazard_sensing_agent_steps": 3722,
+        "dynamic_hazard_sensing_agent_steps": 3722,
+        "agent_busy_steps": 1526,
+        "agent_utilization": 0.3391111111111111,
+        "actual_node_encounters": 397,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 3,
+        "agents_with_hazard_in_sensing_neighborhood": 3,
+        "traversed_route_nodes_affected_by_damage": 401,
+        "communication_metrics": {
+          "transmissions": 509,
+          "deliveries": 509,
+          "dropped": 0,
+          "bytes_tx": 20888,
+          "bytes_rx": 20888,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 508,
+              "rx": 508,
+              "bytes_tx": 20860,
+              "bytes_rx": 20860,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            },
+            "hazard": {
+              "tx": 1,
+              "rx": 1,
+              "bytes_tx": 28,
+              "bytes_rx": 28,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 508,
+              "deliveries": 508,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 20860,
+              "bytes_rx": 20860,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 508
+            },
+            "local_messaging": {
+              "transmissions": 1,
+              "deliveries": 1,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 28,
+              "bytes_rx": 28,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 1
+            }
+          },
+          "tx_by_sender": {
+            "2": 3,
+            "1": 2,
+            "0": 504
+          },
+          "bytes_by_sender": {
+            "2": 152,
+            "1": 136,
+            "0": 20600
+          },
+          "rx_by_recipient": {
+            "-1": 508,
+            "1": 1
+          }
+        },
+        "planner_stats_by_agent": {
+          "0": {
+            "replans": 185,
+            "plan_invalidations": 182,
+            "plan_attempts": 185,
+            "plan_successes": 182,
+            "plan_failures": 3,
+            "plan_expansions_total": 334269,
+            "plan_expansions_last": 40001,
+            "plan_retry_skips": 115,
+            "plan_time_seconds_total": 14.208374000154436,
+            "plan_time_seconds_last": 1.7123873999807984
+          },
+          "1": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 5383,
+            "plan_expansions_last": 5383,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.1856743000098504,
+            "plan_time_seconds_last": 0.1856743000098504
+          },
+          "2": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 4911,
+            "plan_expansions_last": 4911,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.1664327000034973,
+            "plan_time_seconds_last": 0.1664327000034973
+          }
+        },
+        "performance": {
+          "started_at": 326530.3705353,
+          "flood_update_seconds": 6.082671600335743,
+          "flood_update_calls": 1500,
+          "progress_reports": [
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1,
+              "active_agents": 3,
+              "completed_agents": 0,
+              "planning_attempts": 3,
+              "astar_expansions": 11086,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 0,
+              "flood_update_seconds": 0.15722690004622564
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 50,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 14,
+              "astar_expansions": 12435,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 297,
+              "flood_update_seconds": 6.036649200075772
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 27,
+              "astar_expansions": 17687,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 855,
+              "flood_update_seconds": 6.038196400157176
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 37,
+              "astar_expansions": 20322,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1256,
+              "flood_update_seconds": 6.0395422000437975
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 49,
+              "astar_expansions": 23711,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1816,
+              "flood_update_seconds": 6.0411207000142895
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 56,
+              "astar_expansions": 29098,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2261,
+              "flood_update_seconds": 6.042517199879512
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 66,
+              "astar_expansions": 39561,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2394,
+              "flood_update_seconds": 6.044044199923519
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 71,
+              "astar_expansions": 49224,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2492,
+              "flood_update_seconds": 6.045674900175072
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 82,
+              "astar_expansions": 71534,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2721,
+              "flood_update_seconds": 6.047112399770413
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 89,
+              "astar_expansions": 79808,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3131,
+              "flood_update_seconds": 6.048608699638862
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 98,
+              "astar_expansions": 89375,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3564,
+              "flood_update_seconds": 6.050103599845897
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 550,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 108,
+              "astar_expansions": 101905,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3756,
+              "flood_update_seconds": 6.051520099979825
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 600,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 119,
+              "astar_expansions": 117307,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3882,
+              "flood_update_seconds": 6.053844900045078
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 650,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 127,
+              "astar_expansions": 126660,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3990,
+              "flood_update_seconds": 6.05534530011937
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 700,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 132,
+              "astar_expansions": 130836,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4102,
+              "flood_update_seconds": 6.056819200166501
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 750,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 136,
+              "astar_expansions": 134228,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4187,
+              "flood_update_seconds": 6.058255900104996
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 800,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 149,
+              "astar_expansions": 147074,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4353,
+              "flood_update_seconds": 6.059805900265928
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 850,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 156,
+              "astar_expansions": 153451,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4884,
+              "flood_update_seconds": 6.06138809985714
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 900,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 159,
+              "astar_expansions": 157789,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5106,
+              "flood_update_seconds": 6.062910299981013
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 950,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 160,
+              "astar_expansions": 161422,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5382,
+              "flood_update_seconds": 6.0653040000470355
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1000,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 161,
+              "astar_expansions": 165927,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5607,
+              "flood_update_seconds": 6.066878199984785
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1050,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 163,
+              "astar_expansions": 171507,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5749,
+              "flood_update_seconds": 6.068250000302214
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 167,
+              "astar_expansions": 179829,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6017,
+              "flood_update_seconds": 6.069824700069148
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 170,
+              "astar_expansions": 185185,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6612,
+              "flood_update_seconds": 6.071474500466138
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 173,
+              "astar_expansions": 191075,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7271,
+              "flood_update_seconds": 6.073320200433955
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 179,
+              "astar_expansions": 201288,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7667,
+              "flood_update_seconds": 6.075096200336702
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 184,
+              "astar_expansions": 224560,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8256,
+              "flood_update_seconds": 6.076518300396856
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 184,
+              "astar_expansions": 224560,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8346,
+              "flood_update_seconds": 6.077995900588576
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 184,
+              "astar_expansions": 224560,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8403,
+              "flood_update_seconds": 6.079424400464632
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 186,
+              "astar_expansions": 304562,
+              "failed_planning_attempts": 2,
+              "shared_memory_read_callbacks": 9598,
+              "flood_update_seconds": 6.0810269004432485
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 3,
+              "step": 1500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 187,
+              "astar_expansions": 344563,
+              "failed_planning_attempts": 3,
+              "shared_memory_read_callbacks": 10243,
+              "flood_update_seconds": 6.082671600335743
+            }
+          ],
+          "elapsed_seconds": 63.25774780003121
+        },
+        "task_results": [
+          {
+            "task_id": "task_002",
+            "agent_index": 2,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 2,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 2,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_001",
+            "agent_index": 1,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 1,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 1,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 1500,
+            "agent_steps": 1500,
+            "path_distance_m": 201745.152,
+            "path_node_count": 1501,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 0,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 0,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 0,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000",
+            "task_003",
+            "task_006",
+            "task_009"
+          ],
+          [
+            "task_001",
+            "task_004",
+            "task_007"
+          ],
+          [
+            "task_002",
+            "task_005",
+            "task_008"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ],
+    "5": [
+      {
+        "seed": 42,
+        "num_agents": 5,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 1500,
+        "configured_initial_step_budget": 1500,
+        "actual_step_budget": 1500,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 204713.788,
+        "hazard_encounters_total": 397,
+        "hazard_encounters_per_km": 1.9392929214909551,
+        "hazard_encounters_per_1000_agent_steps": 52.93333333333333,
+        "hazard_sensing_agent_steps": 6698,
+        "dynamic_hazard_sensing_agent_steps": 6698,
+        "agent_busy_steps": 1554,
+        "agent_utilization": 0.2072,
+        "actual_node_encounters": 397,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 5,
+        "agents_with_hazard_in_sensing_neighborhood": 5,
+        "traversed_route_nodes_affected_by_damage": 401,
+        "communication_metrics": {
+          "transmissions": 516,
+          "deliveries": 521,
+          "dropped": 0,
+          "bytes_tx": 21280,
+          "bytes_rx": 21456,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 512,
+              "rx": 512,
+              "bytes_tx": 21132,
+              "bytes_rx": 21132,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            },
+            "hazard": {
+              "tx": 4,
+              "rx": 9,
+              "bytes_tx": 148,
+              "bytes_rx": 324,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 512,
+              "deliveries": 512,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 21132,
+              "bytes_rx": 21132,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 512
+            },
+            "local_messaging": {
+              "transmissions": 4,
+              "deliveries": 9,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 148,
+              "bytes_rx": 324,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 9
+            }
+          },
+          "tx_by_sender": {
+            "2": 3,
+            "1": 3,
+            "3": 3,
+            "4": 3,
+            "0": 504
+          },
+          "bytes_by_sender": {
+            "2": 152,
+            "1": 176,
+            "3": 176,
+            "4": 176,
+            "0": 20600
+          },
+          "rx_by_recipient": {
+            "-1": 512,
+            "1": 3,
+            "3": 3,
+            "4": 3
+          }
+        },
+        "planner_stats_by_agent": {
+          "0": {
+            "replans": 185,
+            "plan_invalidations": 182,
+            "plan_attempts": 185,
+            "plan_successes": 182,
+            "plan_failures": 3,
+            "plan_expansions_total": 334269,
+            "plan_expansions_last": 40001,
+            "plan_retry_skips": 115,
+            "plan_time_seconds_total": 13.370693800214212,
+            "plan_time_seconds_last": 1.4848360000178218
+          },
+          "1": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 5383,
+            "plan_expansions_last": 5383,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.17975810001371428,
+            "plan_time_seconds_last": 0.17975810001371428
+          },
+          "2": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 4911,
+            "plan_expansions_last": 4911,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.1658325000316836,
+            "plan_time_seconds_last": 0.1658325000316836
+          },
+          "3": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 5547,
+            "plan_expansions_last": 5547,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.188819799979683,
+            "plan_time_seconds_last": 0.188819799979683
+          },
+          "4": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 10083,
+            "plan_expansions_last": 10083,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.3550505000166595,
+            "plan_time_seconds_last": 0.3550505000166595
+          }
+        },
+        "performance": {
+          "started_at": 326601.0532642,
+          "flood_update_seconds": 6.0096262014703825,
+          "flood_update_calls": 1500,
+          "progress_reports": [
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1,
+              "active_agents": 5,
+              "completed_agents": 0,
+              "planning_attempts": 5,
+              "astar_expansions": 26716,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 0,
+              "flood_update_seconds": 0.14790639997227117
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 50,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 16,
+              "astar_expansions": 28065,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 329,
+              "flood_update_seconds": 5.966870299889706
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 29,
+              "astar_expansions": 33317,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 887,
+              "flood_update_seconds": 5.968189999926835
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 39,
+              "astar_expansions": 35952,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1288,
+              "flood_update_seconds": 5.96965749975061
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 51,
+              "astar_expansions": 39341,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1848,
+              "flood_update_seconds": 5.971081200172193
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 58,
+              "astar_expansions": 44728,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2293,
+              "flood_update_seconds": 5.972556000342593
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 68,
+              "astar_expansions": 55191,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2426,
+              "flood_update_seconds": 5.974127900262829
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 73,
+              "astar_expansions": 64854,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2524,
+              "flood_update_seconds": 5.975667100341525
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 84,
+              "astar_expansions": 87164,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2753,
+              "flood_update_seconds": 5.977089000400156
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 91,
+              "astar_expansions": 95438,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3163,
+              "flood_update_seconds": 5.978702400403563
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 100,
+              "astar_expansions": 105005,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3596,
+              "flood_update_seconds": 5.980287200363819
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 550,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 110,
+              "astar_expansions": 117535,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3788,
+              "flood_update_seconds": 5.981670100300107
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 600,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 121,
+              "astar_expansions": 132937,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3914,
+              "flood_update_seconds": 5.983116900490131
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 650,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 129,
+              "astar_expansions": 142290,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4022,
+              "flood_update_seconds": 5.984620400471613
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 700,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 134,
+              "astar_expansions": 146466,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4134,
+              "flood_update_seconds": 5.986529600631911
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 750,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 138,
+              "astar_expansions": 149858,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4219,
+              "flood_update_seconds": 5.988049800449517
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 800,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 151,
+              "astar_expansions": 162704,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4385,
+              "flood_update_seconds": 5.98936480039265
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 850,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 158,
+              "astar_expansions": 169081,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4916,
+              "flood_update_seconds": 5.990721800655592
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 900,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 161,
+              "astar_expansions": 173419,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5138,
+              "flood_update_seconds": 5.992255300690886
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 950,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 162,
+              "astar_expansions": 177052,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5414,
+              "flood_update_seconds": 5.993769700988196
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1000,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 163,
+              "astar_expansions": 181557,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5639,
+              "flood_update_seconds": 5.995021900802385
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1050,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 165,
+              "astar_expansions": 187137,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5781,
+              "flood_update_seconds": 5.996351300622337
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 169,
+              "astar_expansions": 195459,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6049,
+              "flood_update_seconds": 5.997747300716583
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 172,
+              "astar_expansions": 200815,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6644,
+              "flood_update_seconds": 5.9989687008201145
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 175,
+              "astar_expansions": 206705,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7303,
+              "flood_update_seconds": 6.000422300770879
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 181,
+              "astar_expansions": 216918,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7699,
+              "flood_update_seconds": 6.001701801316813
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 186,
+              "astar_expansions": 240190,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8288,
+              "flood_update_seconds": 6.0035384015063755
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 186,
+              "astar_expansions": 240190,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8378,
+              "flood_update_seconds": 6.005091301514767
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 186,
+              "astar_expansions": 240190,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8435,
+              "flood_update_seconds": 6.00678110140143
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 188,
+              "astar_expansions": 320192,
+              "failed_planning_attempts": 2,
+              "shared_memory_read_callbacks": 9630,
+              "flood_update_seconds": 6.008520101488102
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 5,
+              "step": 1500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 189,
+              "astar_expansions": 360193,
+              "failed_planning_attempts": 3,
+              "shared_memory_read_callbacks": 10275,
+              "flood_update_seconds": 6.0096262014703825
+            }
+          ],
+          "elapsed_seconds": 70.73185350000858
+        },
+        "task_results": [
+          {
+            "task_id": "task_002",
+            "agent_index": 2,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 2,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_001",
+            "agent_index": 1,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 1,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 3,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 3,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 4,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 4,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 1500,
+            "agent_steps": 1500,
+            "path_distance_m": 201745.152,
+            "path_node_count": 1501,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 0,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "not_attempted",
+            "finish_step": 1500,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000",
+            "task_005"
+          ],
+          [
+            "task_001",
+            "task_006"
+          ],
+          [
+            "task_002",
+            "task_007"
+          ],
+          [
+            "task_003",
+            "task_008"
+          ],
+          [
+            "task_004",
+            "task_009"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ],
+    "10": [
+      {
+        "seed": 42,
+        "num_agents": 10,
+        "task_count": 10,
+        "tasks_completed": 0,
+        "completion_rate": 0.0,
+        "all_tasks_completed": false,
+        "observed_simulation_steps": 1500,
+        "configured_initial_step_budget": 1500,
+        "actual_step_budget": 1500,
+        "serial_budget_attempts": 1,
+        "serial_budget_extended": false,
+        "workload_makespan_steps": null,
+        "throughput_tasks_per_step": 0.0,
+        "total_distance_travelled_m": 208697.639,
+        "hazard_encounters_total": 397,
+        "hazard_encounters_per_km": 1.9022735566261004,
+        "hazard_encounters_per_1000_agent_steps": 26.466666666666665,
+        "hazard_sensing_agent_steps": 14144,
+        "dynamic_hazard_sensing_agent_steps": 14144,
+        "agent_busy_steps": 1618,
+        "agent_utilization": 0.10786666666666667,
+        "actual_node_encounters": 397,
+        "actual_edge_encounters": 0,
+        "agents_encountered_hazard": 10,
+        "agents_with_hazard_in_sensing_neighborhood": 10,
+        "traversed_route_nodes_affected_by_damage": 401,
+        "communication_metrics": {
+          "transmissions": 531,
+          "deliveries": 574,
+          "dropped": 0,
+          "bytes_tx": 22088,
+          "bytes_rx": 23472,
+          "mean_delay_steps": 0.0,
+          "mean_scheduled_delay_steps": 0.0,
+          "late_deliveries": 0,
+          "pending_deliveries": 0,
+          "pending_by_kind": {},
+          "pending_by_recipient": {},
+          "dropped_by_recipient": {},
+          "in_flight": 0,
+          "by_kind": {
+            "board": {
+              "tx": 522,
+              "rx": 522,
+              "bytes_tx": 21776,
+              "bytes_rx": 21776,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            },
+            "hazard": {
+              "tx": 9,
+              "rx": 52,
+              "bytes_tx": 312,
+              "bytes_rx": 1696,
+              "dropped": 0,
+              "pending": 0,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0
+            }
+          },
+          "by_channel": {
+            "shared_memory_board": {
+              "transmissions": 522,
+              "deliveries": 522,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 21776,
+              "bytes_rx": 21776,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 522
+            },
+            "local_messaging": {
+              "transmissions": 9,
+              "deliveries": 52,
+              "dropped": 0,
+              "pending_deliveries": 0,
+              "bytes_tx": 312,
+              "bytes_rx": 1696,
+              "late_deliveries": 0,
+              "mean_delay_steps": 0.0,
+              "delivery_delay_samples": 52
+            }
+          },
+          "tx_by_sender": {
+            "2": 3,
+            "5": 3,
+            "7": 3,
+            "9": 3,
+            "1": 3,
+            "3": 3,
+            "4": 3,
+            "6": 3,
+            "8": 3,
+            "0": 504
+          },
+          "bytes_by_sender": {
+            "2": 152,
+            "5": 152,
+            "7": 152,
+            "9": 152,
+            "1": 176,
+            "3": 176,
+            "4": 176,
+            "6": 176,
+            "8": 176,
+            "0": 20600
+          },
+          "rx_by_recipient": {
+            "-1": 522,
+            "1": 8,
+            "3": 8,
+            "4": 8,
+            "5": 3,
+            "6": 8,
+            "7": 3,
+            "8": 8,
+            "9": 3,
+            "2": 3
+          }
+        },
+        "planner_stats_by_agent": {
+          "0": {
+            "replans": 185,
+            "plan_invalidations": 182,
+            "plan_attempts": 185,
+            "plan_successes": 182,
+            "plan_failures": 3,
+            "plan_expansions_total": 334269,
+            "plan_expansions_last": 40001,
+            "plan_retry_skips": 115,
+            "plan_time_seconds_total": 11.261113800341263,
+            "plan_time_seconds_last": 1.4762012000428513
+          },
+          "1": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 5383,
+            "plan_expansions_last": 5383,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.14538569998694584,
+            "plan_time_seconds_last": 0.14538569998694584
+          },
+          "2": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 4911,
+            "plan_expansions_last": 4911,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.11793020000914112,
+            "plan_time_seconds_last": 0.11793020000914112
+          },
+          "3": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 5547,
+            "plan_expansions_last": 5547,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.1329167999792844,
+            "plan_time_seconds_last": 0.1329167999792844
+          },
+          "4": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 10083,
+            "plan_expansions_last": 10083,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.25784869998460636,
+            "plan_time_seconds_last": 0.25784869998460636
+          },
+          "5": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 3079,
+            "plan_expansions_last": 3079,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.07384350005304441,
+            "plan_time_seconds_last": 0.07384350005304441
+          },
+          "6": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 3748,
+            "plan_expansions_last": 3748,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.09032810002099723,
+            "plan_time_seconds_last": 0.09032810002099723
+          },
+          "7": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 13225,
+            "plan_expansions_last": 13225,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.33805399999255314,
+            "plan_time_seconds_last": 0.33805399999255314
+          },
+          "8": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 11464,
+            "plan_expansions_last": 11464,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.29526039998745546,
+            "plan_time_seconds_last": 0.29526039998745546
+          },
+          "9": {
+            "replans": 1,
+            "plan_invalidations": 0,
+            "plan_attempts": 1,
+            "plan_successes": 1,
+            "plan_failures": 0,
+            "plan_expansions_total": 15016,
+            "plan_expansions_last": 15016,
+            "plan_retry_skips": 0,
+            "plan_time_seconds_total": 0.38165250001475215,
+            "plan_time_seconds_last": 0.38165250001475215
+          }
+        },
+        "performance": {
+          "started_at": 326682.3502046,
+          "flood_update_seconds": 5.3193462995113805,
+          "flood_update_calls": 1500,
+          "progress_reports": [
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1,
+              "active_agents": 10,
+              "completed_agents": 0,
+              "planning_attempts": 10,
+              "astar_expansions": 73248,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 0,
+              "flood_update_seconds": 0.11477720004040748
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 50,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 21,
+              "astar_expansions": 74597,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 391,
+              "flood_update_seconds": 5.289508200308774
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 34,
+              "astar_expansions": 79849,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 949,
+              "flood_update_seconds": 5.290527700388338
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 44,
+              "astar_expansions": 82484,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1350,
+              "flood_update_seconds": 5.291609300707933
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 56,
+              "astar_expansions": 85873,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 1910,
+              "flood_update_seconds": 5.29259550065035
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 63,
+              "astar_expansions": 91260,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2355,
+              "flood_update_seconds": 5.293639200506732
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 73,
+              "astar_expansions": 101723,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2488,
+              "flood_update_seconds": 5.294640600273851
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 78,
+              "astar_expansions": 111386,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2586,
+              "flood_update_seconds": 5.295762700145133
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 89,
+              "astar_expansions": 133696,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 2815,
+              "flood_update_seconds": 5.29677310003899
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 96,
+              "astar_expansions": 141970,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3225,
+              "flood_update_seconds": 5.297779100132175
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 105,
+              "astar_expansions": 151537,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3658,
+              "flood_update_seconds": 5.298973099968862
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 550,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 115,
+              "astar_expansions": 164067,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3850,
+              "flood_update_seconds": 5.299970700056292
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 600,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 126,
+              "astar_expansions": 179469,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 3976,
+              "flood_update_seconds": 5.300989700190257
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 650,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 134,
+              "astar_expansions": 188822,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4084,
+              "flood_update_seconds": 5.302096500003245
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 700,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 139,
+              "astar_expansions": 192998,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4196,
+              "flood_update_seconds": 5.303087400039658
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 750,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 143,
+              "astar_expansions": 196390,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4281,
+              "flood_update_seconds": 5.304085900017526
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 800,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 156,
+              "astar_expansions": 209236,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4447,
+              "flood_update_seconds": 5.305110199784394
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 850,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 163,
+              "astar_expansions": 215613,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 4978,
+              "flood_update_seconds": 5.30620719975559
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 900,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 166,
+              "astar_expansions": 219951,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5200,
+              "flood_update_seconds": 5.307144399848767
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 950,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 167,
+              "astar_expansions": 223584,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5476,
+              "flood_update_seconds": 5.308042799879331
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1000,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 168,
+              "astar_expansions": 228089,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5701,
+              "flood_update_seconds": 5.309082399762701
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1050,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 170,
+              "astar_expansions": 233669,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 5843,
+              "flood_update_seconds": 5.310087799618486
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1100,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 174,
+              "astar_expansions": 241991,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6111,
+              "flood_update_seconds": 5.311084799701348
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1150,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 177,
+              "astar_expansions": 247347,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 6706,
+              "flood_update_seconds": 5.312162099638954
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1200,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 180,
+              "astar_expansions": 253237,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7365,
+              "flood_update_seconds": 5.3132340994197875
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1250,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 186,
+              "astar_expansions": 263450,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 7761,
+              "flood_update_seconds": 5.3142764996155165
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1300,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 191,
+              "astar_expansions": 286722,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8350,
+              "flood_update_seconds": 5.315355999453459
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1350,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 191,
+              "astar_expansions": 286722,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8440,
+              "flood_update_seconds": 5.316371999215335
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1400,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 191,
+              "astar_expansions": 286722,
+              "failed_planning_attempts": 0,
+              "shared_memory_read_callbacks": 8497,
+              "flood_update_seconds": 5.317330399295315
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1450,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 193,
+              "astar_expansions": 366724,
+              "failed_planning_attempts": 2,
+              "shared_memory_read_callbacks": 9692,
+              "flood_update_seconds": 5.318420699390117
+            },
+            {
+              "disaster_type": "flood",
+              "seed": 42,
+              "team_size": 10,
+              "step": 1500,
+              "active_agents": 1,
+              "completed_agents": 0,
+              "planning_attempts": 194,
+              "astar_expansions": 406725,
+              "failed_planning_attempts": 3,
+              "shared_memory_read_callbacks": 10337,
+              "flood_update_seconds": 5.3193462995113805
+            }
+          ],
+          "elapsed_seconds": 67.79834389995085
+        },
+        "task_results": [
+          {
+            "task_id": "task_002",
+            "agent_index": 2,
+            "start": 991208163,
+            "goal": 1291643395,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_005",
+            "agent_index": 5,
+            "start": 13634740598,
+            "goal": 1072641452,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_007",
+            "agent_index": 7,
+            "start": 417006262,
+            "goal": 798577750,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_009",
+            "agent_index": 9,
+            "start": 420576045,
+            "goal": 2068240757,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 12,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 12,
+            "reposition_distance_before_m": 859.183
+          },
+          {
+            "task_id": "task_001",
+            "agent_index": 1,
+            "start": 2027050477,
+            "goal": 992729223,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_003",
+            "agent_index": 3,
+            "start": 1138493867,
+            "goal": 1993440299,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_004",
+            "agent_index": 4,
+            "start": 1996917566,
+            "goal": 1984460399,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_006",
+            "agent_index": 6,
+            "start": 1304564777,
+            "goal": 1019755403,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_008",
+            "agent_index": 8,
+            "start": 2057215550,
+            "goal": 726415042,
+            "success": false,
+            "finish_reason": "reposition_failed",
+            "finish_step": 14,
+            "agent_steps": 0,
+            "path_distance_m": 0.0,
+            "path_node_count": 0,
+            "reposition_steps_before": 14,
+            "reposition_distance_before_m": 703.151
+          },
+          {
+            "task_id": "task_000",
+            "agent_index": 0,
+            "start": 1121911611,
+            "goal": 1130812093,
+            "success": false,
+            "finish_reason": "timeout",
+            "finish_step": 1500,
+            "agent_steps": 1500,
+            "path_distance_m": 201745.152,
+            "path_node_count": 1501,
+            "reposition_steps_before": 0,
+            "reposition_distance_before_m": 0.0
+          }
+        ],
+        "task_queues": [
+          [
+            "task_000"
+          ],
+          [
+            "task_001"
+          ],
+          [
+            "task_002"
+          ],
+          [
+            "task_003"
+          ],
+          [
+            "task_004"
+          ],
+          [
+            "task_005"
+          ],
+          [
+            "task_006"
+          ],
+          [
+            "task_007"
+          ],
+          [
+            "task_008"
+          ],
+          [
+            "task_009"
+          ]
+        ],
+        "deployment_base_node": 1121911611,
+        "parallel_speedup": null,
+        "scaling_efficiency": null
+      }
+    ]
+  }
+}
