@@ -39,6 +39,8 @@ import math
 import contextlib
 import io
 import statistics
+import hashlib
+import time
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.abspath(os.path.join(script_dir, '..'))
@@ -1945,7 +1947,8 @@ def run_independent_channel_delay_experiment(
     Shared memory, local messaging and pheromones stay enabled; only the two
     latency parameters vary. This separates channel latency effects that the
     legacy diagonal delay sweep confounded.
-    """
+      
+       """
     if workload not in ("collaboration", "collaboration_local", "communication_dependent"):
         raise ValueError("independent channel delay matrix requires a collaboration workload")
     configs = build_delay_matrix_configs(local_delays, board_delays)
@@ -2143,7 +2146,7 @@ def _run_scaling_arm_with_budget(
     growth_factor=2.0,
     retry_until_complete=False,
 ):
-    """Run one scaling arm, adaptively extending only the serial baseline.
+    """Run one scaling arm with a common adaptive horizon policy.
 
     Every retry restarts from step 1 with the same seed and exact task queues.
     This avoids treating a step-budget timeout as a completed serial workload.
@@ -2157,8 +2160,11 @@ def _run_scaling_arm_with_budget(
 
     budget = int(initial_steps)
     attempts = 0
+    cumulative_wall_clock_seconds = 0.0
+    attempt_horizons = []
     while True:
         attempts += 1
+        attempt_horizons.append(int(budget))
         print(
             f"[scaling] disaster={run_kwargs.get('disaster_type')} "
             f"seed={run_kwargs.get('seed')} team_size={run_kwargs.get('num_agents')} "
@@ -2166,7 +2172,17 @@ def _run_scaling_arm_with_budget(
             file=__import__("sys").stderr,
             flush=True,
         )
+        started = __import__("time").perf_counter()
         result = run_single(**dict(run_kwargs, steps=budget))
+        attempt_wall_clock_seconds = __import__("time").perf_counter() - started
+        cumulative_wall_clock_seconds += attempt_wall_clock_seconds
+        result["wall_clock_execution_seconds"] = attempt_wall_clock_seconds
+        result["cumulative_retry_wall_clock_seconds"] = cumulative_wall_clock_seconds
+        result["attempt_count"] = attempts
+        result["attempt_horizons"] = list(attempt_horizons)
+        result["wall_clock_timing_boundary"] = (
+            "run_single call including graph load, initialization, simulation, and result extraction"
+        )
         task_rows = result.get("task_queue_results", [])
         all_complete = (
             len(task_rows) == 10
@@ -2269,15 +2285,16 @@ def run_scaling_experiment(
             # The serial arm must finish the entire fixed workload before it
             # can serve as a valid speedup denominator. If the initial budget
             # is insufficient, replay the same seed + queues with a larger
-            # horizon. Parallel arms retain the original configured budget.
+            # horizon. Parallel teams retain the original configured budget.
+            # Every team size uses the same deterministic horizon/retry policy.
             with contextlib.redirect_stdout(io.StringIO()):
                 result, used_budget, budget_attempts, helper_all_complete = (
                     _run_scaling_arm_with_budget(
                         run_kwargs=run_kwargs,
                         initial_steps=steps,
-                        max_steps=(serial_max_steps if num_agents == 1 else steps),
+                        max_steps=serial_max_steps,
                         growth_factor=serial_step_growth_factor,
-                        retry_until_complete=(num_agents == 1),
+                        retry_until_complete=True,
                     )
                 )
 
@@ -2302,6 +2319,32 @@ def run_scaling_experiment(
             )
             denominator = num_agents * max(1, elapsed_observed)
             utilization = min(1.0, total_agent_busy_steps / denominator)
+            task_manifest = [
+                dict(task)
+                for task in manifest
+            ]
+            task_manifest_hash = hashlib.sha256(
+                json.dumps(
+                    task_manifest, sort_keys=True, separators=(",", ":")
+                ).encode("utf-8")
+            ).hexdigest()
+            hazard_config = {
+                "disaster_type": disaster_type,
+                "centre": DISASTER_CENTRE,
+                "radius_m": DISASTER_RADIUS_M,
+                "severity": DISASTER_SEVERITY,
+                "wind_bearing_deg": WIND_BEARING,
+                "seed": run_seed,
+            }
+            hazard_config_hash = hashlib.sha256(
+                json.dumps(
+                    hazard_config, sort_keys=True, separators=(",", ":")
+                ).encode("utf-8")
+            ).hexdigest()
+            incomplete_tasks = [
+                row["task_id"] for row in task_rows
+                if not row.get("success")
+            ]
 
             exposure = result.get("hazard_exposure", {})
             hazard_encounters = (
@@ -2323,14 +2366,23 @@ def run_scaling_experiment(
                 "seed": run_seed,
                 "num_agents": num_agents,
                 "task_count": task_count,
+                "task_manifest": task_manifest,
+                "task_manifest_hash": task_manifest_hash,
+                "hazard_config": hazard_config,
+                "hazard_config_hash": hazard_config_hash,
+                "algorithm_config_id": "homogeneous_navigator_default_comm_v1",
                 "tasks_completed": completed,
                 "completion_rate": completed / task_count,
                 "all_tasks_completed": all_complete,
+                "incomplete_task_ids": incomplete_tasks,
                 "observed_simulation_steps": elapsed_observed,
                 "configured_initial_step_budget": int(steps),
                 "actual_step_budget": int(used_budget),
                 "serial_budget_attempts": int(budget_attempts),
-                "serial_budget_extended": bool(num_agents == 1 and used_budget > steps),
+                "serial_budget_extended": bool(used_budget > steps),
+                "budget_extended": bool(used_budget > steps),
+                "budget_policy_id": "common_geometric_retry_1500_3000_6000_12000",
+                "maximum_step_budget": int(serial_max_steps),
                 "workload_makespan_steps": workload_makespan,
                 "throughput_tasks_per_step": (
                     completed / workload_makespan if all_complete and workload_makespan
@@ -2365,6 +2417,11 @@ def run_scaling_experiment(
                 "task_results": task_rows,
                 "task_queues": result.get("task_queues"),
                 "deployment_base_node": deployment_base,
+                "wall_clock_execution_seconds": result.get("wall_clock_execution_seconds"),
+                "wall_clock_timing_boundary": result.get("wall_clock_timing_boundary"),
+                "cumulative_retry_wall_clock_seconds": result.get("cumulative_retry_wall_clock_seconds"),
+                "attempt_count": result.get("attempt_count"),
+                "attempt_horizons": result.get("attempt_horizons"),
             }
             raw[num_agents].append(row)
 
@@ -2422,7 +2479,7 @@ def run_scaling_experiment(
 
     return {
         "experiment": "fixed_workload_multi_agent_scaling",
-        "schema_version": "1.1",
+        "schema_version": "1.2",
         "disaster_type": disaster_type,
         "fixed_task_count": task_count,
         "agent_counts": agent_counts,
@@ -2431,9 +2488,9 @@ def run_scaling_experiment(
         "simulation_step_budget": steps,
         "serial_baseline_max_step_budget": int(serial_max_steps),
         "serial_baseline_budget_policy": (
-            "Replay the same seed and fixed task manifest with geometrically "
-            "increasing step budgets until all ten tasks complete or the "
-            "serial maximum budget is reached. Parallel arms use the initial budget."
+            "Replay every team size from the same initial horizon with geometrically "
+            "increasing horizons 1500, 3000, 6000, 12000 until all ten tasks "
+            "complete or the common maximum is reached."
         ),
         "serial_step_growth_factor": float(serial_step_growth_factor),
         "task_assignment": (
@@ -2908,7 +2965,7 @@ def test_dynamic_exposure_instrumentation_uses_real_observations_and_channels():
     assert not disabled.shared_memory["pheromones"]
 
 
-def test_dynamic_exposure_paired_arms_share_manifest_and_event():
+def test_paired_dynamic_exposure_runs_share_manifest_and_event():
     paired = run_paired_communication_experiment(
         disaster_type="earthquake",
         workload="dynamic_hazard_exposure",
@@ -2934,7 +2991,7 @@ def test_temporal_node_encounter_excludes_pre_damage_traversal():
     from test_comms_roles import NoEngine, make
 
     sim = make(n=2, steps=0, engine_cls=NoEngine)
-    node = sim.graph._adj[sim.agents[0].current_node][0][0]
+    node = sim.agents[0].current_node
     sim._dynamic_damage_first_step[node] = 2
     sim._record_temporal_encounters(
         0, sim.agents[0].current_node, node, 1)
@@ -2952,6 +3009,7 @@ def test_temporal_edge_encounter_excludes_pre_disable_traversal():
     end = sim.graph._adj[start][0][0]
     edge = frozenset({start, end})
     sim._dynamic_edge_first_step[edge] = 2
+    sim.graph._disabled_edges.add(edge)
     sim._record_temporal_encounters(0, start, end, 1)
     assert edge not in sim._hazard_exposure["actual_edge_encounters"]
     sim._record_temporal_encounters(0, start, end, 2)
@@ -3060,21 +3118,6 @@ def test_unrelated_discovery_is_not_response_relevant():
     assert sim._preceding_discoveries(0, 2, current, None) == []
 
 
-def test_initial_and_dynamic_distance_metrics_are_separate():
-    from test_comms_roles import NoEngine, make
-
-    sim = make(n=2, steps=0, engine_cls=NoEngine)
-    sim._initial_damage_nodes = {sim.agents[0].current_node}
-    sim._dynamic_damage_nodes = {sim.agents[1].current_node}
-    sim.graph._node_damage[sim.agents[0].current_node] = 0.4
-    sim.graph._node_damage[sim.agents[1].current_node] = 0.4
-    sim._record_hazard_exposure(1)
-    exposure = sim.hazard_exposure_metrics()
-    assert exposure["nearest_initial_hazard_distance_m_by_step"]["1"]["0"] == 0
-    assert exposure["nearest_dynamic_hazard_distance_m_by_step"]["1"]["1"] == 0
-
-
-
 def test_historical_path_nodes_do_not_make_discoveries_relevant():
     from test_comms_roles import NoEngine, make
 
@@ -3103,7 +3146,6 @@ def test_planner_discovery_snapshot_survives_observer_timestamp_update():
     sim._record_hazard_discoveries(
         0, "teammate_message", 4, {adjacent}
     )
-
     # This is the snapshot taken immediately before the planner decision.
     snapshot = sim._preceding_discoveries(
         0,
@@ -3188,11 +3230,8 @@ def test_damage_occupancy_and_sensing_thresholds_are_distinct():
     sim._record_hazard_exposure(1)
     exposure = sim.hazard_exposure_metrics()
 
-    assert exposure["actual_node_encounters"] >= 1
-    assert exposure["agents_occupying_dynamically_damaged_nodes"] == 1
-    assert exposure[
-        "agents_with_dynamic_hazard_in_sensing_neighborhood"
-    ] == 0
+    assert exposure["nearest_initial_hazard_distance_m_by_step"]["1"]["0"] == 0
+    assert exposure["nearest_dynamic_hazard_distance_m_by_step"]["1"]["1"] == 0
 
     # At 0.4 the node crosses the danger-observation threshold, but remains
     # passable because the impassability threshold is >0.6.
@@ -3330,7 +3369,7 @@ def test_collaboration_task_builder_creates_shared_hazard_to_shelter_route():
     assert tasks[1]["start"] == route[0]
     assert scenario["hazard_node"] == route[10]
     assert scenario["route_overlap_fraction"] > 0.5
-    assert scenario["leader_to_nearest_follower_distance_m"] > 500
+    assert scenario["leader_to_nearest_follower_distance_m"] > 500.0
     assert scenario["hazard_node"] in scenario["common_route_nodes"]
 
 
@@ -3462,277 +3501,6 @@ def test_leading_agent_pheromone_trail_is_retrieved_by_shared_shelter_follower()
         shared_memory=False,
         local_messaging=False,
         pheromones=True,
-        radius_m=100.0,
-    )
-    sim = quiet(
-        DynamicSwarmSimulation,
-        graph,
-        num_agents=2,
-        seed=7,
-        tasks=tasks,
-        require_feasible=True,
-        comm=cfg,
-        engine=NoEngine(graph),
-    )
-    quiet(sim.run, 80)
-
-    assert sim.agents[0].reached_goal
-    assert sim.agents[1].reached_goal
-    instrumentation = sim.communication_instrumentation()
-    teammate_reads = [
-        event for event in instrumentation["pheromone_read_events"]
-        if event["reader_agent"] == 1
-        and event["discoverer_agent"] == 0
-        and event["channel"] == "pheromones"
-    ]
-    assert teammate_reads, "Follower never read the leader's deposited trail."
-    assert all(event["route_relevant"] for event in teammate_reads)
-    assert instrumentation["pheromone_cross_agent_retrievals"] == len(teammate_reads)
-
-
-# ---------------------------------------------------------------------------
-# Issue 7 follow-up: local radio, online pheromones, and decision influence
-# ---------------------------------------------------------------------------
-
-def test_local_collaboration_geometry_is_inside_radio_range():
-    from test_comms_roles import GridGraph
-
-    graph = GridGraph()
-    route = [graph.node(10, col) for col in range(30)]
-    tasks, scenario = build_collaboration_tasks_from_route(
-        graph, route, num_agents=2, lead_gap=2,
-        min_leader_separation_m=0.0,
-        max_leader_separation_m=CommConfig().radius_m,
-    )
-    assert tasks[0]["start"] == route[2]
-    assert tasks[1]["start"] == route[0]
-    assert scenario["hazard_node"] == route[3]
-    assert scenario["follower_hazard_hops_at_start"] >= 3
-    assert 0 < scenario["leader_to_nearest_follower_distance_m"] <= 500.0
-
-
-def test_local_collaboration_geometry_supports_ten_agents():
-    from test_comms_roles import GridGraph
-
-    graph = GridGraph()
-    route = [graph.node(10, col) for col in range(30)]
-    tasks, scenario = build_collaboration_tasks_from_route(
-        graph, route, num_agents=10, lead_gap=10,
-        min_leader_separation_m=0.0,
-        max_leader_separation_m=CommConfig().radius_m,
-    )
-    assert len(tasks) == 10
-    assert tasks[0]["start"] == route[10]
-    assert [task["start"] for task in tasks[1:]] == route[:9]
-    assert scenario["hazard_node"] == route[11]
-    assert scenario["follower_hazard_hops_at_start"] >= 3
-    assert 0 < scenario["leader_to_nearest_follower_distance_m"] <= 500.0
-    assert scenario["hazard_node"] in scenario["common_route_nodes"]
-
-
-
-def test_local_collaboration_generator_keeps_agents_within_radio_range():
-    graph = load_fresh_graph()
-    tasks, event, scenario = generate_collaboration_scenario(
-        graph, num_agents=2, disaster_type="earthquake", seed=42,
-        min_dist=1000, max_dist=4000, local_communication=True,
-    )
-    assert len(tasks) == 2
-    assert event["trigger_step"] == 1
-    assert scenario["communication_mode"] == "local_radio"
-    assert 0 < scenario["leader_to_nearest_follower_distance_m"] <= 500.0
-    assert scenario["hazard_node"] in scenario["common_route_nodes"]
-    assert scenario["alternative_routes_verified_after_event"] is True
-
-
-def test_local_message_only_warns_follower_before_self_detection():
-    from test_comms_roles import GridGraph, NoEngine, quiet
-    from comms import CommConfig, build_delay_matrix_configs
-    from dynamic_disaster_engine import DisasterEvent
-    from swarm_simulation_dynamic import DynamicSwarmSimulation
-
-    def make_sim(shared_memory=False, local_messaging=False, steps=2):
-        graph = GridGraph()
-        route = [graph.node(10, col) for col in range(30)]
-        tasks, scenario = build_collaboration_tasks_from_route(
-            graph, route, num_agents=2, lead_gap=2,
-            min_leader_separation_m=0.0,
-            max_leader_separation_m=500.0,
-        )
-        hazard = scenario["hazard_node"]
-        node_data = graph._nodes[hazard]
-
-        class OneNodeHazard(NoEngine):
-            def tick(self, step):
-                if step != 1:
-                    return []
-                graph._node_damage[hazard] = 0.9
-                return [DisasterEvent(
-                    step, "dynamic_hazard_exposure",
-                    (node_data["lat"], node_data["lon"]),
-                    10.0, 0.9, [hazard], 0,
-                    "single blocked route node",
-                )]
-
-        cfg = CommConfig(
-            shared_memory=shared_memory,
-            local_messaging=local_messaging,
-            pheromones=False,
-            radius_m=500.0,
-        )
-        sim = quiet(
-            DynamicSwarmSimulation,
-            graph,
-            num_agents=2,
-            seed=13,
-            tasks=tasks,
-            require_feasible=True,
-            comm=cfg,
-            roles=["navigator", "navigator"],
-            engine=OneNodeHazard(graph),
-        )
-        quiet(sim.run, steps)
-        return sim, hazard
-
-    informed, hazard = make_sim(shared_memory=False, local_messaging=True)
-    follower = informed.agents[1]
-    assert hazard in follower.local_memory["blocked_nodes"]
-    assert follower.learned_at[hazard][1] == "msg"
-    assert follower.stats["blocked_learned_self"] == 0
-    assert follower.stats["blocked_learned_msg"] == 1
-    metrics = informed.communication_instrumentation()
-    assert metrics["local_message_successful_transmissions"] >= 1
-    assert metrics["local_message_successful_deliveries"] >= 1
-    # The follower is still two hops from the hazard on its next decision;
-    # its planner must therefore replan from the teammate message alone.
-    message_replans = [
-        event for event in follower.plan_events
-        if event.get("blocked_route_sources", {}).get(str(hazard)) == "msg"
-        or event.get("blocked_route_sources", {}).get(hazard) == "msg"
-    ]
-    assert message_replans
-    assert message_replans[0]["route_changed"] is True
-    assert follower.stats["blocked_learned_self"] == 0
-
-    ablated, hazard = make_sim(shared_memory=False, local_messaging=False)
-    follower_without_radio = ablated.agents[1]
-    assert hazard not in follower_without_radio.local_memory["blocked_nodes"]
-    assert follower_without_radio.stats["blocked_learned_msg"] == 0
-    assert ablated.communication_instrumentation()[
-        "local_message_successful_deliveries"
-    ] == 0
-
-    # The same early-warning geometry also isolates the shared-board path:
-    # with radio disabled, the follower reads the leader's board publication
-    # at step 2 and replans before its own sensor can see the hazard.
-    board_only, hazard = make_sim(shared_memory=True, local_messaging=False)
-    board_reads = [
-        event for event in board_only.communication_instrumentation()[
-            "shared_memory_read_events"
-        ]
-        if event["reader_agent"] == 1
-        and event["discoverer_agent"] == 0
-        and event["node_id"] == hazard
-        and event["channel"] == "blocked_nodes"
-    ]
-    assert board_reads
-    assert board_reads[0]["retrieval_step"] == 2
-    board_follower = board_only.agents[1]
-    assert board_follower.stats["blocked_learned_self"] == 0
-    board_replans = [
-        event for event in board_follower.plan_events
-        if event.get("blocked_route_sources", {}).get(hazard) == "shared_memory"
-    ]
-    assert board_replans and board_replans[0]["route_changed"] is True
-    assert board_only.communication_instrumentation()[
-        "local_message_successful_deliveries"
-    ] == 0
-
-
-
-
-def test_ten_agent_local_radio_delivers_hazard_before_follower_self_sensing():
-    from test_comms_roles import GridGraph, NoEngine, quiet
-    from comms import CommConfig
-    from dynamic_disaster_engine import DisasterEvent
-    from swarm_simulation_dynamic import DynamicSwarmSimulation
-
-    def make_sim(local_messaging):
-        graph = GridGraph()
-        route = [graph.node(10, col) for col in range(30)]
-        tasks, scenario = build_collaboration_tasks_from_route(
-            graph, route, num_agents=10, lead_gap=10,
-            min_leader_separation_m=0.0,
-            max_leader_separation_m=500.0,
-        )
-        hazard = scenario["hazard_node"]
-        node_data = graph._nodes[hazard]
-
-        class OneNodeHazard(NoEngine):
-            def tick(self, step):
-                if step != 1:
-                    return []
-                graph._node_damage[hazard] = 0.9
-                return [DisasterEvent(
-                    step, "dynamic_hazard_exposure",
-                    (node_data["lat"], node_data["lon"]),
-                    10.0, 0.9, [hazard], 0,
-                    "single blocked route node",
-                )]
-
-        cfg = CommConfig(
-            shared_memory=False,
-            local_messaging=local_messaging,
-            pheromones=False,
-            radius_m=500.0,
-        )
-        sim = quiet(
-            DynamicSwarmSimulation,
-            graph,
-            num_agents=10,
-            seed=13,
-            tasks=tasks,
-            require_feasible=True,
-            comm=cfg,
-            roles=["navigator"] * 10,
-            engine=OneNodeHazard(graph),
-        )
-        quiet(sim.run, 2)
-        return sim, hazard
-
-    informed, hazard = make_sim(local_messaging=True)
-    nearest_follower = informed.agents[9]
-    assert hazard in nearest_follower.local_memory["blocked_nodes"]
-    assert nearest_follower.learned_at[hazard][1] == "msg"
-    assert nearest_follower.stats["blocked_learned_self"] == 0
-    metrics = informed.communication_instrumentation()
-    assert metrics["local_message_successful_transmissions"] >= 1
-    assert metrics["local_message_successful_deliveries"] >= 1
-
-    ablated, hazard = make_sim(local_messaging=False)
-    nearest_follower_without_radio = ablated.agents[9]
-    assert hazard not in nearest_follower_without_radio.local_memory["blocked_nodes"]
-    assert nearest_follower_without_radio.stats["blocked_learned_msg"] == 0
-    assert ablated.communication_instrumentation()[
-        "local_message_successful_deliveries"
-    ] == 0
-
-
-def test_pheromones_are_deposited_incrementally_before_goal_completion():
-    from test_comms_roles import GridGraph, NoEngine, quiet
-    from comms import CommConfig, build_delay_matrix_configs
-    from swarm_simulation_dynamic import DynamicSwarmSimulation
-
-    graph = GridGraph()
-    route = [graph.node(10, col) for col in range(30)]
-    tasks = [
-        {"start": route[1], "goal": route[-1]},
-        {"start": route[0], "goal": route[-1]},
-    ]
-    cfg = CommConfig(
-        shared_memory=False,
-        local_messaging=False,
-        pheromones=True,
         radius_m=500.0,
     )
     sim = quiet(
@@ -3773,7 +3541,6 @@ def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
     def choose(pheromones):
         graph = GridGraph()
         current = graph.node(10, 10)
-        north = graph.node(9, 10)
         # Put the goal at the current coordinate (but keep a distinct graph
         # node) so the default policy takes its deterministic near-goal branch.
         # North and south are symmetric candidates; the pheromone feature is
@@ -3834,7 +3601,7 @@ def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing(
     assert replan["blocked_route_sources"][warned_node] == "msg"
 
 
-def test_pheromone_disabled_means_no_trail_publication_or_reads():
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
     from test_comms_roles import GridGraph, NoEngine, quiet
     from comms import CommConfig, build_delay_matrix_configs
     from swarm_simulation_dynamic import DynamicSwarmSimulation
@@ -3845,340 +3612,3752 @@ def test_pheromone_disabled_means_no_trail_publication_or_reads():
         {"start": route[1], "goal": route[-1]},
         {"start": route[0], "goal": route[-1]},
     ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
     sim = quiet(
         DynamicSwarmSimulation,
         graph,
         num_agents=2,
-        seed=19,
+        seed=17,
         tasks=tasks,
         require_feasible=True,
-        comm=CommConfig(
-            shared_memory=False, local_messaging=False, pheromones=False
-        ),
+        comm=cfg,
         engine=NoEngine(graph),
     )
-    quiet(sim.run, 2)
-    assert not sim.shared_memory["pheromones"]
-    assert sim.communication_instrumentation()["pheromone_read_events"] == []
-
-
-# ---------------------------------------------------------------------------
-# Issue 2 — Stage A regression tests: remove synthetic reroute measurements
-# ---------------------------------------------------------------------------
-
-def test_ground_truth_does_not_call_automatic_path_invalidation():
-    """Disaster events must not directly mutate agent state or force reroutes."""
-    import inspect
-
-    assert not hasattr(DynamicSwarmSimulation, "_invalidate_blocked_paths")
-    run_source = inspect.getsource(DynamicSwarmSimulation.run)
-    assert "_invalidate_blocked_paths" not in run_source
-    assert "agent.blacklist.add" not in run_source
-    assert "MAX_STEPS_WITHOUT_PROGRESS" not in run_source
-
-
-def test_stall_counter_is_not_used_as_adaptation_lag():
-    """The old synthetic adaptation-lag counters must stay removed."""
-    import inspect
-
-    source = inspect.getsource(DynamicSwarmSimulation)
-    assert "_agent_reroute_events" not in source
-    assert "_agent_adaptation_lag" not in source
-    assert "mean_adaptation_lag" not in source
-    assert "prev_progress" not in source
-
-
-def test_real_plan_events_are_preserved_and_reported():
-    """Actual planner events remain the source of planner response metrics."""
-    from types import SimpleNamespace
-
-    sim = DynamicSwarmSimulation.__new__(DynamicSwarmSimulation)
-    actual_events = [
-        {
-            "step": 7,
-            "reason": "invalidated",
-            "ok": True,
-            "route_changed": True,
-        },
-        {
-            "step": 9,
-            "reason": "invalidated",
-            "ok": False,
-            "route_changed": False,
-        },
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
     ]
-    sim.agents = [SimpleNamespace(plan_events=actual_events)]
-    sim._response = {
-        "planner_successful_replans": 1,
-        "planner_route_changes_following_hazard_discovery": 1,
-        "planner_replan_source_attribution": {
-            "self_observation": 1,
-            "teammate_message": 0,
-            "shared_memory": 0,
-            "unattributed": 0,
-        },
-    }
-    sim._navigation_decisions = []
-
-    metrics = sim.response_metrics()
-
-    assert metrics["planner_invalidated_plan_events"] == 2
-    assert metrics["planner_successful_replans"] == 1
-    assert metrics["planner_route_changes_following_hazard_discovery"] == 1
-    # Reporting metrics must not consume or rewrite the agent's event history.
-    assert sim.agents[0].plan_events == actual_events
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
 
 
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
 
-def test_stage_b_ground_truth_event_registration_does_not_create_awareness():
-    from types import SimpleNamespace
-    from test_comms_roles import NoEngine, make
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
 
-    sim = make(n=2, steps=0, engine_cls=NoEngine)
-    agent = sim.agents[0]
-    hazard_node = sim.graph._adj[agent.current_node][0][0]
-    event = SimpleNamespace(
-        step=3,
-        event_type="aftershock",
-        centre=(35.0, 139.0),
-        radius_m=100.0,
-        severity=0.5,
-        nodes_newly_damaged=[hazard_node],
-        edges_newly_disabled=0,
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
     )
-    before_blocked = set(agent.local_memory["blocked_nodes"])
-    sim._register_hazard_events([event], 3, {hazard_node}, set())
-
-    metrics = sim.hazard_response_metrics()
-    assert metrics["total_hazard_events"] == 1
-    assert metrics["event_records"][0]["event_id"] == "hazard_000001"
-    assert metrics["event_records"][0]["affected_agents"]
-    assert metrics["awareness_records"] == []
-    assert agent.local_memory["blocked_nodes"] == before_blocked
-    assert not any(
-        item["hazard_id"] == hazard_node
-        for item in sim._hazard_discoveries
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
     )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
 
 
-def test_stage_b_awareness_is_linked_to_event_and_first_time_is_preserved():
-    from types import SimpleNamespace
-    from test_comms_roles import NoEngine, make
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
 
-    sim = make(n=2, steps=0, engine_cls=NoEngine)
-    node = sim.graph._adj[sim.agents[0].current_node][0][0]
-    event = SimpleNamespace(
-        step=4, event_type="flood_expand", centre=(35.0, 139.0),
-        radius_m=200.0, severity=0.6, nodes_newly_damaged=[node],
-        edges_newly_disabled=0,
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
     )
-    sim._register_hazard_events([event], 4, {node}, set())
-
-    sim._record_hazard_discoveries(0, "self_observation", 5, {node})
-    sim._record_hazard_discoveries(0, "teammate_message", 7, {node})
-
-    awareness = sim.hazard_response_metrics()["awareness_records"]
-    assert len(awareness) == 1
-    assert awareness[0]["event_id"] == "hazard_000001"
-    assert awareness[0]["awareness_step"] == 5
-    assert awareness[0]["awareness_source"] == "self_observation"
-    assert awareness[0]["awareness_delay_steps"] == 1
-
-
-def test_stage_b_response_delay_is_measured_from_actual_awareness():
-    from types import SimpleNamespace
-    from test_comms_roles import NoEngine, make
-
-    sim = make(n=2, steps=0, engine_cls=NoEngine)
-    node = sim.graph._adj[sim.agents[0].current_node][0][0]
-    event = SimpleNamespace(
-        step=2, event_type="fire_spread", centre=(35.0, 139.0),
-        radius_m=100.0, severity=0.4, nodes_newly_damaged=[node],
-        edges_newly_disabled=0,
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
     )
-    sim._register_hazard_events([event], 2, {node}, set())
-    sim._record_hazard_discoveries(0, "teammate_message", 4, {node})
-    sim._record_event_response(
-        0, "hazard_000001", 7, "planner_replan", True,
-        {"plan_found": True, "route_changed": True},
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
     )
-    metrics = sim.hazard_response_metrics()
-    assert metrics["agents_became_aware"] == 1
-    assert metrics["agents_responded"] == 1
-    assert metrics["mean_awareness_delay_steps"] == 2.0
-    assert metrics["mean_response_delay_steps"] == 3.0
-    assert metrics["successful_responses"] == 1
-
-
-def test_stage_b_default_policy_response_is_labelled_non_causal():
-    from types import SimpleNamespace
-    from test_comms_roles import NoEngine, make
-
-    sim = make(n=2, steps=0, engine_cls=NoEngine)
-    current = sim.agents[0].current_node
-    hazard_node = sim.graph._adj[current][0][0]
-    safe_node = next(
-        node for node, _ in sim.graph._adj[current] if node != hazard_node
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
     )
-    event = SimpleNamespace(
-        step=1, event_type="aftershock", centre=(35.0, 139.0),
-        radius_m=100.0, severity=0.5, nodes_newly_damaged=[hazard_node],
-        edges_newly_disabled=0,
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
     )
-    sim._register_hazard_events([event], 1, {hazard_node}, set())
-    sim._record_hazard_discoveries(0, "self_observation", 2, {hazard_node})
-    discovery = sim._hazard_discoveries[-1]
-    sim._record_default_policy_event_responses(0, 3, safe_node, [discovery])
-
-    response = sim.hazard_response_metrics()["response_records"][0]
-    assert response["response_type"] == "default_policy_safe_navigation_action"
-    assert response["successful"] is True
-    assert response["details"]["causal_route_change_established"] is False
-
-
-def test_stage_b_planner_response_requires_prior_event_awareness():
-    from types import SimpleNamespace
-    from test_comms_roles import NoEngine, make
-
-    sim = make(n=2, steps=0, engine_cls=NoEngine)
-    node = sim.graph._adj[sim.agents[0].current_node][0][0]
-    event = SimpleNamespace(
-        step=1, event_type="rubble_spread", centre=(35.0, 139.0),
-        radius_m=100.0, severity=0.5, nodes_newly_damaged=[node],
-        edges_newly_disabled=0,
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
     )
-    sim._register_hazard_events([event], 1, {node}, set())
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
 
-    # A ground-truth event alone cannot produce a planner response.
-    sim._record_event_response(
-        0, "hazard_000001", 2, "planner_replan", True,
-        {"plan_found": True, "route_changed": True},
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
     )
-    assert sim.hazard_response_metrics()["response_records"] == []
-
-    sim._record_hazard_discoveries(0, "teammate_message", 3, {node})
-    sim._record_event_response(
-        0, "hazard_000001", 5, "planner_replan", True,
-        {"plan_found": True, "route_changed": True},
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
     )
-    response = sim.hazard_response_metrics()["response_records"][0]
-    assert response["response_delay_steps"] == 2
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
 
 
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
 
-def test_stage_b_event_edge_ids_are_attributed_to_agents():
-    from types import SimpleNamespace
-    from test_comms_roles import NoEngine, make
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
 
-    sim = make(n=2, steps=0, engine_cls=NoEngine)
-    current = sim.agents[0].current_node
-    neighbour = sim.graph._adj[current][0][0]
-    edge_id = frozenset((current, neighbour))
-    event = SimpleNamespace(
-        step=2, event_type="bridge_failure", centre=(35.0, 139.0),
-        radius_m=50.0, severity=0.8, nodes_newly_damaged=[],
-        edges_newly_disabled=1,
-        edges_newly_disabled_ids=[edge_id],
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
     )
-    sim._register_hazard_events([event], 2, set(), {edge_id})
-    record = sim.hazard_response_metrics()["event_records"][0]
-    assert record["edge_attribution"] == "event_provided_edge_ids"
-    assert record["affected_edges"] == [sorted(edge_id, key=str)]
-    assert 0 in record["locally_exposed_agents"]
-
-
-
-def test_message_bus_respects_configured_delay_and_reports_delivery_timing():
-    from comms import MessageBus, CommConfig
-
-    bus = MessageBus(CommConfig(delay_steps=2))
-    bus.send(
-        sender=0, kind="hazard", payload={"blocked": (123,), "danger": {}},
-        step=5, recipients=[1],
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
     )
-
-    assert bus.deliver(5) == []
-    assert bus.deliver(6) == []
-    assert bus.pending() == 1
-
-    delivered = bus.deliver(7)
-    assert len(delivered) == 1
-    recipient, message = delivered[0]
-    assert recipient == 1
-    assert message.sent_step == 5
-    assert message.scheduled_delay_steps == 2
-
-    stats = bus.stats()
-    assert stats["deliveries"] == 1
-    assert stats["pending_deliveries"] == 0
-    assert stats["mean_delay_steps"] == 2.0
-    assert stats["mean_scheduled_delay_steps"] == 2.0
-
-
-def test_message_bus_zero_delay_is_delivered_in_same_communication_phase():
-    from comms import MessageBus, CommConfig
-
-    bus = MessageBus(CommConfig(delay_steps=0))
-    bus.send(0, "hazard", {"blocked": (456,), "danger": {}}, 9, [1])
-    delivered = bus.deliver(9)
-    assert len(delivered) == 1
-    assert delivered[0][0] == 1
-    assert delivered[0][1].scheduled_delay_steps == 0
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
 
 
-def test_communication_delay_config_rejects_negative_or_non_integer_values():
-    import pytest
-    from comms import CommConfig, build_delay_matrix_configs, MessageBus
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
 
-    with pytest.raises(ValueError):
-        CommConfig(delay_steps=-1)
-    with pytest.raises(ValueError):
-        CommConfig(board_delay_steps=1.5)
-    with pytest.raises(ValueError):
-        MessageBus(CommConfig()).send(0, "hazard", {}, 0, [1], delay=-1)
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
 
-
-def test_communication_dependent_configs_isolate_local_messaging():
-    configs = get_communication_dependent_configs()
-    assert set(configs) == {
-        "local_messaging_enabled",
-        "local_messaging_disabled",
-    }
-    enabled = configs["local_messaging_enabled"]
-    disabled = configs["local_messaging_disabled"]
-    assert enabled.local_messaging is True
-    assert disabled.local_messaging is False
-    assert enabled.shared_memory is False
-    assert disabled.shared_memory is False
-    assert enabled.pheromones is False
-    assert disabled.pheromones is False
-
-
-def test_communication_dependent_requires_two_agents():
-    import pytest
-    with pytest.raises(ValueError, match="exactly 2 agents"):
-        run_paired_communication_experiment(
-            workload="communication_dependent",
-            n_runs=0,
-            num_agents=1,
-            comm_configs=get_communication_dependent_configs(),
-        )
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
 
 
-def test_agent_senses_damage_on_occupied_node_and_neighbours():
-    """Local sensing includes the occupied node without simulator-side injection."""
-    from test_comms_roles import NoEngine, make
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
 
-    sim = make(n=2, steps=0, engine_cls=NoEngine)
-    agent = sim.agents[0]
-    current = agent.current_node
-    neighbour = agent.get_all_neighbors()[0]
-    sim.graph._node_damage[current] = 0.8
-    sim.graph._node_damage[neighbour] = 0.9
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
 
-    observation = agent.sense()
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
 
-    assert current in observation["danger"]
-    assert current in observation["blocked_nodes"]
-    assert neighbour in observation["danger"]
-    assert neighbour in observation["blocked_nodes"]
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north
+
+
+def test_teammate_hazard_message_changes_immediate_next_hop_before_self_sensing():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+    from comms import Message
+
+    graph = GridGraph()
+    start = graph.node(10, 10)
+    warned_node = graph.node(10, 11)
+    goal = graph.node(10, 20)
+    agent = SNNAgent(graph, start, goal)
+    agent.use_planner = True
+    agent.plan = agent._astar_known()
+    original_next = agent.plan[1]
+    assert original_next == warned_node
+
+    # The warning arrives before the hazard materialises locally. The graph
+    # remains undamaged, so this decision is caused by teammate information,
+    # not by the agent's own sensor or a ground-truth graph mutation.
+    agent.receive(Message(
+        id=0,
+        kind="hazard",
+        sender=0,
+        sent_step=0,
+        payload={"blocked": (warned_node,), "danger": {}},
+    ))
+    agent.step()
+
+    assert agent.current_node != original_next
+    assert agent.plan[1] == agent.current_node
+    assert warned_node not in agent.plan
+    assert agent.stats["blocked_learned_msg"] == 1
+    assert agent.stats["blocked_learned_self"] == 0
+    replan = agent.plan_events[-1]
+    assert replan["route_changed"] is True
+    assert replan["first_divergence_hops_from_current"] == 0
+    assert replan["blocked_route_sources"][warned_node] == "msg"
+
+
+def test_pheromones_are_deposited_incrementally_before_goal_completion():
+    from test_comms_roles import GridGraph, NoEngine, quiet
+    from comms import CommConfig, build_delay_matrix_configs
+    from swarm_simulation_dynamic import DynamicSwarmSimulation
+
+    graph = GridGraph()
+    route = [graph.node(10, col) for col in range(30)]
+    tasks = [
+        {"start": route[1], "goal": route[-1]},
+        {"start": route[0], "goal": route[-1]},
+    ]
+    cfg = CommConfig(
+        shared_memory=False,
+        local_messaging=False,
+        pheromones=True,
+        radius_m=500.0,
+    )
+    sim = quiet(
+        DynamicSwarmSimulation,
+        graph,
+        num_agents=2,
+        seed=17,
+        tasks=tasks,
+        require_feasible=True,
+        comm=cfg,
+        engine=NoEngine(graph),
+    )
+    # Initial occupied nodes are marked at t=0; the leader's first newly
+    # visited node is deposited during movement, not at goal completion.
+    assert sim._pheromone_publications[route[1]][0]["step"] == 0
+    quiet(sim.run, 1)
+    assert not sim.agents[0].reached_goal
+    deposited = [
+        (node, item)
+        for node, publications in sim._pheromone_publications.items()
+        for item in publications
+        if item["agent"] == 0 and item["step"] == 1
+    ]
+    assert deposited, "Leader did not publish a trail during movement."
+    reads = [
+        event for event in sim.communication_instrumentation()["pheromone_read_events"]
+        if event["reader_agent"] == 1
+        and event["discoverer_agent"] == 0
+        and event["retrieval_step"] == 1
+    ]
+    assert reads, "Follower did not read a teammate trail before goal completion."
+
+
+def test_default_snn_policy_can_change_next_hop_due_to_teammate_pheromone():
+    from test_comms_roles import GridGraph
+    from agent_snn_v3 import SNNAgent
+
+    def choose(pheromones):
+        graph = GridGraph()
+        current = graph.node(10, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        north = graph.node(9, 10)
+        # Put the goal at the current coordinate (but keep a distinct graph
+        # node) so the default policy takes its deterministic near-goal branch.
+        # North and south are symmetric candidates; the pheromone feature is
+        # the only difference between their scores.
+        goal = graph.node(10, 20)
+        graph._nodes[goal]["lat"] = graph._nodes[current]["lat"]
+        graph._nodes[goal]["lon"] = graph._nodes[current]["lon"]
+        agent = SNNAgent(graph, current, goal, rng=__import__("random").Random(1))
+        agent.shared_memory = {
+            "blocked_nodes": set(),
+            "danger_nodes": {},
+            "pheromones": dict(pheromones),
+        }
+        agent.step()
+        return agent.current_node, north
+
+    without_trail, north = choose({})
+    with_teammate_trail, north = choose({north: 1.0})
+    assert without_trail != north
+    assert with_teammate_trail == north

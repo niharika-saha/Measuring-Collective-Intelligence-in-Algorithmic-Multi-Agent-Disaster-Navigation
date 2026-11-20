@@ -1,0 +1,9 @@
+scenario,metric,n,mean_difference_coordinated_minus_independent,median_difference,sd_difference,ci95_lower,ci95_upper,wilcoxon_statistic,wilcoxon_p_two_sided,holm_adjusted_p,positive,negative,zero,source
+earthquake,mean_distance_per_task_m,30,-66.220647,-32.293500,74.550882,-94.058404,-38.382890,0.0,0.0000182153,0.0000728612,0,24,6,collective_baselines_earthquake_schema15_30runs.json
+earthquake,agent_steps_total,30,-17.833333,-8.500000,32.329215,-29.905261,-5.761406,26.0,0.0018627850,0.0055913551,3,18,9,collective_baselines_earthquake_schema15_30runs.json
+earthquake,makespan_steps,30,-1.233333,-1.000000,4.328600,-2.849659,0.382993,61.5,0.0596565953,0.1193131906,5,16,9,collective_baselines_earthquake_schema15_30runs.json
+earthquake,success_rate,30,0.000000,0.000000,0.000000,0.000000,0.000000,0.0,, ,0,0,30,collective_baselines_earthquake_schema15_30runs.json
+flood,mean_distance_per_task_m,30,-47.375937,-11.822050,79.694906,-77.134504,-17.617369,14.0,0.0002598153,0.0007794459,1,21,8,collective_baselines_flood_schema15_30runs.json
+flood,agent_steps_total,30,-9.633333,0.000000,28.735996,-20.363531,1.096864,62.0,0.0629116834,0.1258233668,8,13,9,collective_baselines_flood_schema15_30runs.json
+flood,makespan_steps,30,-0.533333,0.000000,3.510902,-1.844326,0.777660,84.0,0.2712835138,0.2712835138,9,12,9,collective_baselines_flood_schema15_30runs.json
+flood,success_rate,30,0.000000,0.000000,0.000000,0.000000,0.000000,0.0,, ,0,0,30,collective_baselines_flood_schema15_30runs.json
