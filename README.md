@@ -16,7 +16,7 @@ The implementation supports the following research dimensions:
 - **Pheromone guidance:** node-associated pheromone values that can influence candidate-action scores.
 - **Collective metrics:** information acquisition, coverage, overlap, replanning attribution, communication efficiency, hazard exposure, and scaling efficiency.
 
-Mechanism influence is not treated as evidence of improved outcomes. Candidate-action effects, replanning, and communication are reported separately from success rate, travel distance, agent effort, and makespan.
+Candidate-action effects, replanning, and communication are reported separately from success rate, travel distance, agent effort, and makespan.
 
 ## System Architecture
 
@@ -217,7 +217,7 @@ The saved current tree contains an older earthquake scaling result:
 
 - `swarm-of-agents/scaling/scaling_earthquake_20runs_v2.json`
 
-It declares team sizes 1, 2, 3, 5, and 10, 20 runs, and a fixed ten-task workload. The canonical fair-scaling 20-run JSON requested for the latest analysis was not found in the current repository during README generation and should be restored before citing the newest scaling statistics.
+It declares team sizes 1, 2, 3, 5, and 10, 20 runs, and a fixed ten-task workload. 
 
 ## Repository Structure
 
@@ -260,9 +260,7 @@ README.md
 
 ### Verified Environment Notes
 
-- The active inspected environment is Python 3.10.0 on Windows 64-bit.
-- No Python version constraint is declared in project metadata.
-- `requirements.txt` is unpinned and currently contains:
+- `requirements.txt` is unpinned and contains:
 
 ```text
 google-genai
@@ -273,7 +271,7 @@ numpy
 folium
 ```
 
-Additional modules used by the swarm include the Python standard library, pytest for tests, and packages already declared in `requirements.txt` as applicable. No package lock, `pyproject.toml`, or `setup.py` was found.
+Additional modules used by the swarm include the Python standard library, pytest for tests, and packages already declared in `requirements.txt` as applicable. 
 
 ### PowerShell Setup
 
